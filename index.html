@@ -1149,10 +1149,12 @@ function authMsg(e){
   var m=e&&e.message||'', n=/at least (\d+)/i.exec(m);
   return AUTHERR[m]||(/rate limit/i.test(m)?'Za dużo prób. Poczekaj chwilę.':/Password should be/i.test(m)?'Hasło musi mieć co najmniej '+(n?n[1]:'6')+' znaków (ten limit ustawia Supabase).':'Coś poszło nie tak: '+m);
 }
-var PW_MIN=4, PW_OK=/^[\x21-\x7E]+$/; /* Latin letters, digits and symbols only; no spaces, no Polish/Ukrainian letters */
+var PW_MIN=4, PW_OK=/^[\x20-\x7E]+$/; /* Latin letters, digits, symbols and spaces; no Polish/Ukrainian letters */
+var lastEmail=''; try{lastEmail=localStorage.getItem('rz.email')||''}catch(e){}
+function rememberEmail(v){ lastEmail=v; try{ if(v) localStorage.setItem('rz.email',v) }catch(e){} }
 function pwProblem(p,p2){
   if(p.length<PW_MIN) return 'Hasło musi mieć co najmniej '+PW_MIN+' znaki.';
-  if(!PW_OK.test(p)) return 'Hasło może zawierać tylko litery łacińskie (bez polskich znaków), cyfry i znaki specjalne — bez spacji.';
+  if(!PW_OK.test(p)) return 'Hasło może zawierać tylko litery łacińskie (bez polskich znaków), cyfry, spacje i znaki specjalne.';
   if(p!==p2) return 'Hasła nie są takie same.';
   return '';
 }
@@ -1165,10 +1167,11 @@ function showLogin(mode){
   mode=mode||'in';
   document.body.classList.add('auth'); S.ready=false; S.user=null; S.role=null;
   [accountSheet,settingsSheet,editorSheet,subjectSheet,subjectsSheet].forEach(function(s){s.close()});
-  var em=h('input',{type:'email',placeholder:'E-mail',autocomplete:'email','aria-label':'E-mail'});
+  var em=h('input',{type:'email',placeholder:'E-mail',autocomplete:'email','aria-label':'E-mail',autocapitalize:'none',autocorrect:'off',spellcheck:'false',inputmode:'email',value:lastEmail});
+  em.addEventListener('input',function(){ lastEmail=em.value.trim() });
   var twice=mode==='up'||mode==='new';
-  var pw=h('input',{type:'password',placeholder:mode==='new'?'Nowe hasło':'Hasło',autocomplete:mode==='in'?'current-password':'new-password','aria-label':'Hasło'});
-  var pw2=twice?h('input',{type:'password',placeholder:'Powtórz hasło',autocomplete:'new-password','aria-label':'Powtórz hasło'}):null;
+  var pw=h('input',{type:'password',autocapitalize:'none',autocorrect:'off',spellcheck:'false',placeholder:mode==='new'?'Nowe hasło':'Hasło',autocomplete:mode==='in'?'current-password':'new-password','aria-label':'Hasło'});
+  var pw2=twice?h('input',{type:'password',autocapitalize:'none',autocorrect:'off',spellcheck:'false',placeholder:'Powtórz hasło',autocomplete:'new-password','aria-label':'Powtórz hasło'}):null;
   var eye=h('button',{class:'eye',type:'button','aria-label':'Pokaż hasło','aria-pressed':'false',title:'Pokaż hasło'},eyeIcon(false));
   eye.addEventListener('click',function(){
     var show=pw.type==='password'; pw.type=show?'text':'password'; if(pw2) pw2.type=pw.type;
@@ -1182,13 +1185,14 @@ function showLogin(mode){
   var form=h('form',{class:'login'},
     h('h1',{text:'Rozkład 3I3'}),
     h('p',{text:{in:'Zaloguj się, żeby zobaczyć rozkład i zadania.',up:'Konto założysz tylko na e-mail, który dodał właściciel.',reset:'Wyślemy link do ustawienia nowego hasła.',new:'Ustaw nowe hasło.'}[mode]}),
-    mode==='new'?null:em, mode==='reset'?null:pwBox, pwBox2, twice?h('div',{class:'rule',text:'Hasło: minimum '+PW_MIN+' znaki, tylko litery łacińskie, cyfry i znaki specjalne.'}):null, go, msg,
+    mode==='new'?null:em, mode==='reset'?null:pwBox, pwBox2, twice?h('div',{class:'rule',text:'Hasło: minimum '+PW_MIN+' znaki — litery łacińskie, cyfry, spacje i znaki specjalne.'}):null, go, msg,
     mode==='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('up')}},'Nie mam konta — załóż'):null,
     mode==='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('reset')}},'Nie pamiętam hasła'):null,
     mode!=='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('in')}},'Wróć do logowania'):null);
   form.addEventListener('submit',async function(ev){
     ev.preventDefault(); say(''); go.disabled=true;
     var e=em.value.trim().toLowerCase(), p=pw.value;
+    if(e) rememberEmail(e);
     if(twice){ var bad=pwProblem(p,pw2.value); if(bad){ say(bad,true); go.disabled=false; return } }
     try{
       var here=location.origin+location.pathname;
@@ -1211,7 +1215,7 @@ function showLogin(mode){
     go.disabled=false;
   });
   $('#app').replaceChildren(form);
-  (mode==='new'?pw:em).focus();
+  (mode==='new'||(mode==='in'&&em.value)?pw:em).focus();
 }
 var starting=null;
 function start(){ if(!starting) starting=startNow().finally(function(){starting=null}); return starting }

@@ -4,8 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rozkład 3I3</title>
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#18222b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" id="themeColor" content="#5fbcf5">
+<script>
+/* apply the saved theme before anything is drawn: 'light', 'dark' or automatic */
+(function(){var t=null;try{t=localStorage.getItem('rz.theme')}catch(e){}
+  if(t==='light'||t==='dark') document.documentElement.setAttribute('data-theme',t);
+  var dark=t==='dark'||(t!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+  document.getElementById('themeColor').setAttribute('content',dark?'#140f0d':'#5fbcf5');})();
+</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -21,45 +27,93 @@
 <style>
 /* Layout: sticky toolbar with zjazd numbers. Wide screens get a horizontal timetable like the university PDF (one row per day, time left to right). Phones get two swipe pages, Sobota and Niedziela, with one card per class and a quick field for homework. Sheets slide up on phones and in from the right on desktop. */
 :root{
-  --bg:#eceff2; --surface:#ffffff; --surface-2:#f4f6f8; --ink:#15212c; --ink-2:#4b5967; --line:#d3dae1;
-  --accent:#0d6b73; --accent-ink:#ffffff; --danger:#b3261e; --scrim:rgba(10,18,24,.45);
-  --wyk-bg:#fbf0c4; --wyk-bd:#c9a227;
-  --lab-bg:#d9e8fb; --lab-bd:#3f7fd0;
-  --proj-bg:#fbdcdc; --proj-bd:#d05a5a;
-  --lek-bg:#d9efdc; --lek-bd:#4a9a58;
-  --cw-bg:#e7dcf6; --cw-bd:#8a62c2;
-  --inne-bg:#e6e8ee; --inne-bd:#8a93a6; --band:#f5f7f9;
+  --bg:#bfe6ff; --surface:#ffffff; --surface-2:#f2f9ee; --ink:#15301b; --ink-2:#4a6450; --line:#cfe1cc;
+  --accent:#2e8b3d; --accent-ink:#ffffff; --danger:#c0392b; --scrim:rgba(12,40,20,.38);
+  --top:rgba(255,255,255,.80); --glow:none; --card-shadow:0 2px 10px rgba(30,80,40,.10);
+  --wyk-bg:#fff3c2; --wyk-bd:#e0a800;
+  --lab-bg:#dbefff; --lab-bd:#3b8fd9;
+  --proj-bg:#ffe0da; --proj-bd:#e0583f;
+  --lek-bg:#dcf4d6; --lek-bd:#3f9b45;
+  --cw-bg:#ece2fb; --cw-bd:#8a62c2;
+  --inne-bg:#eef0ec; --inne-bd:#8c9a8a; --band:#f5fbf2;
   --font:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-c:'IBM Plex Sans Condensed','IBM Plex Sans',system-ui,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0f161c; --surface:#18222b; --surface-2:#1f2b36; --ink:#e7edf2; --ink-2:#9aabb9; --line:#2c3a47;
-    --accent:#4cc2c9; --accent-ink:#06262a; --danger:#ff8a80; --scrim:rgba(0,0,0,.6);
-    --wyk-bg:#3a3318; --wyk-bd:#d6b640;
-    --lab-bg:#172c47; --lab-bd:#5b9be6;
-    --proj-bg:#422024; --proj-bd:#e07a7a;
-    --lek-bg:#1a3a22; --lek-bd:#67b877;
-    --cw-bg:#2f2347; --cw-bd:#a98ae0;
-    --inne-bg:#2a2f3a; --inne-bd:#8e98ad; --band:#1c2833;
-    color-scheme:dark;
+  --bg:#0c0908; --surface:#1b1513; --surface-2:#241c19; --ink:#f5e9df; --ink-2:#b89f90; --line:#3b2c25;
+  --accent:#ff7a1a; --accent-ink:#1a0b02; --danger:#ff6b5b; --scrim:rgba(0,0,0,.62);
+  --top:rgba(20,15,13,.86); --glow:0 0 0 1px rgba(255,122,26,.25),0 0 18px rgba(255,90,20,.22); --card-shadow:0 2px 14px rgba(0,0,0,.5);
+  --wyk-bg:#33240f; --wyk-bd:#ffb43d;
+  --lab-bg:#1a2430; --lab-bd:#6fa8dc;
+  --proj-bg:#3a1712; --proj-bd:#ff5a36;
+  --lek-bg:#1d2719; --lek-bd:#8bc34a;
+  --cw-bg:#2a1d31; --cw-bd:#c08cff;
+  --inne-bg:#27201d; --inne-bd:#a8968b; --band:#201916;
+  color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0f161c; --surface:#18222b; --surface-2:#1f2b36; --ink:#e7edf2; --ink-2:#9aabb9; --line:#2c3a47;
-  --accent:#4cc2c9; --accent-ink:#06262a; --danger:#ff8a80; --scrim:rgba(0,0,0,.6);
-  --wyk-bg:#3a3318; --wyk-bd:#d6b640;
-  --lab-bg:#172c47; --lab-bd:#5b9be6;
-  --proj-bg:#422024; --proj-bd:#e07a7a;
-  --lek-bg:#1a3a22; --lek-bd:#67b877;
-  --cw-bg:#2f2347; --cw-bd:#a98ae0;
-  --inne-bg:#2a2f3a; --inne-bd:#8e98ad; --band:#1c2833;
+  --bg:#0c0908; --surface:#1b1513; --surface-2:#241c19; --ink:#f5e9df; --ink-2:#b89f90; --line:#3b2c25;
+  --accent:#ff7a1a; --accent-ink:#1a0b02; --danger:#ff6b5b; --scrim:rgba(0,0,0,.62);
+  --top:rgba(20,15,13,.86); --glow:0 0 0 1px rgba(255,122,26,.25),0 0 18px rgba(255,90,20,.22); --card-shadow:0 2px 14px rgba(0,0,0,.5);
+  --wyk-bg:#33240f; --wyk-bd:#ffb43d;
+  --lab-bg:#1a2430; --lab-bd:#6fa8dc;
+  --proj-bg:#3a1712; --proj-bd:#ff5a36;
+  --lek-bg:#1d2719; --lek-bd:#8bc34a;
+  --cw-bg:#2a1d31; --cw-bd:#c08cff;
+  --inne-bg:#27201d; --inne-bd:#a8968b; --band:#201916;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+/* ---------- scenery: day = sky, sun, grass · night = forge, lava, molten iron ---------- */
+.scene{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.scene>div{position:absolute;inset:0}
+.day{background:linear-gradient(180deg,#5fbcf5 0%,#9ad6fb 38%,#d4effd 68%,#e8f8df 100%)}
+.day .sun{position:absolute;inset:auto;top:-90px;right:5%;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,#fffbe0 0 26%,#ffe066 34%,rgba(255,214,70,.55) 46%,rgba(255,214,70,0) 70%);animation:sunpulse 7s ease-in-out infinite}
+.day .cloud{position:absolute;inset:auto;height:46px;border-radius:40px;background:#fff;opacity:.85;filter:blur(1px);box-shadow:30px -18px 0 4px #fff,70px -6px 0 0 #fff}
+.day .c1{top:14%;left:-180px;width:150px;animation:drift 95s linear infinite}
+.day .c2{top:30%;left:-180px;width:110px;opacity:.65;animation:drift 140s linear infinite -60s}
+.day .c3{top:8%;left:-180px;width:90px;opacity:.55;animation:drift 120s linear infinite -30s}
+.day .land{position:absolute;inset:auto 0 0 0;height:150px;
+  background:
+   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 30'%3E%3Cpath d='M0 30 L3 14 L6 30 L9 8 L13 30 L16 16 L19 30 L23 4 L27 30 L30 13 L33 30 L37 9 L41 30 L44 15 L48 30z' fill='%233d9a36'/%3E%3C/svg%3E") repeat-x left bottom/48px 44px,
+   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 150' preserveAspectRatio='none'%3E%3Cpath d='M0 70 Q80 30 170 62 T340 58 T520 50 T600 66 V150 H0z' fill='%2389cf6f'/%3E%3Cpath d='M0 98 Q110 70 220 96 T430 92 T600 100 V150 H0z' fill='%235fb44a'/%3E%3Crect y='138' width='600' height='12' fill='%233d9a36'/%3E%3C/svg%3E") no-repeat left bottom/100% 150px}
+.night{display:none;background:radial-gradient(120% 70% at 50% 115%,#ff5a14 0%,#b2290a 18%,#4a1407 38%,#1a0d0a 60%,#0c0908 80%)}
+.night .glow{position:absolute;inset:auto 0 0 0;height:45%;background:radial-gradient(70% 100% at 50% 100%,rgba(255,120,30,.35),rgba(255,80,20,0) 70%);animation:heat 5s ease-in-out infinite}
+.night .lava{position:absolute;inset:auto 0 0 0;height:120px;background-repeat:repeat-x;background-position:bottom;background-size:auto 120px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='m' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd23f'/%3E%3Cstop offset='.35' stop-color='%23ff7a1a'/%3E%3Cstop offset='1' stop-color='%23b81d06'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 46 Q75 30 150 44 T300 40 T450 46 T600 40 V120 H0z' fill='url(%23m)'/%3E%3Cpath d='M0 70 l60 -8 50 14 70 -10 60 12 80 -9 60 11 70 -8 70 10 80 -9 V120 H0z' fill='%23260b05' opacity='.85'/%3E%3Cpath d='M30 84 l40 10 M120 80 l30 18 M210 88 l50 -6 M300 82 l25 16 M390 90 l55 -8 M500 84 l35 14' stroke='%23ff8a24' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M0 108 l90 -6 70 8 90 -7 80 7 100 -6 90 8 80 -4 V120 H0z' fill='%23130604'/%3E%3C/svg%3E");animation:heat 4s ease-in-out infinite}
+.night .ember{position:absolute;inset:auto;bottom:60px;width:4px;height:4px;border-radius:50%;background:#ffb347;box-shadow:0 0 8px 2px rgba(255,140,40,.8);opacity:0;animation:rise 9s linear infinite}
+.night .e1{left:8%;animation-delay:0s}.night .e2{left:22%;animation-delay:2.5s;animation-duration:11s}.night .e3{left:37%;animation-delay:5s}
+.night .e4{left:51%;animation-delay:1.2s;animation-duration:12s}.night .e5{left:66%;animation-delay:3.8s}.night .e6{left:79%;animation-delay:6.4s;animation-duration:10s}
+.night .e7{left:91%;animation-delay:.6s;animation-duration:13s}.night .e8{left:44%;animation-delay:7.5s;width:3px;height:3px}
+@keyframes sunpulse{50%{transform:scale(1.06)}}
+@keyframes drift{to{transform:translateX(calc(100vw + 360px))}}
+@keyframes heat{50%{opacity:.78;filter:brightness(1.15)}}
+@keyframes rise{0%{transform:translate(0,0);opacity:0}10%{opacity:1}100%{transform:translate(30px,-75vh);opacity:0}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .day{display:none}:root:not([data-theme="light"]) .night{display:block}}
+:root[data-theme="dark"] .day{display:none}
+:root[data-theme="dark"] .night{display:block}
+:root[data-theme="light"] .day{display:block}
+:root[data-theme="light"] .night{display:none}
+@media (prefers-reduced-motion:reduce){.scene *{animation:none!important}}
+/* surfaces sit on the scenery */
+.top{background:var(--top)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sched,.card,.empty,.login,.gap{box-shadow:var(--card-shadow)}
+.gap{background-color:color-mix(in srgb,var(--surface) 70%,transparent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{border-bottom-color:#ff7a1a55;box-shadow:0 1px 0 #ff7a1a33,0 6px 22px rgba(255,90,20,.12)}}
+:root[data-theme="dark"] .top{border-bottom-color:#ff7a1a55;box-shadow:0 1px 0 #ff7a1a33,0 6px 22px rgba(255,90,20,.12)}
+.blk:hover,.card:hover{box-shadow:var(--glow),var(--card-shadow)}
+.btn.primary{box-shadow:var(--glow)}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.themes button{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:10px 6px;cursor:pointer;display:grid;gap:4px;justify-items:center;font-size:13px;font-weight:500}
+.themes button span{font-size:22px;line-height:1}
+.themes button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+
 [hidden]{display:none!important}
-body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.4;padding-block:0 40px}
+body{margin:0;min-height:100vh;background:var(--bg);padding-bottom:120px!important;color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.4;padding-block:0 40px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 button,input,select,textarea{font:inherit;color:inherit}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -220,6 +274,12 @@ body.auth .top{display:none}
 .login p{margin:0;color:var(--ink-2);font-size:14px}
 .login input{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface-2);font-size:16px}
 .login .btn{justify-content:center;min-height:44px}
+.pwrow{position:relative}
+.pwrow input{padding-right:48px}
+.pwrow .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;display:grid;place-items:center;border:0;background:transparent;color:var(--ink-2);border-radius:8px;cursor:pointer}
+.pwrow .eye:hover{color:var(--ink)}
+.pwrow .eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.login .rule{font-size:12.5px;color:var(--ink-2);margin-top:-6px}
 .login .lnk{background:none;border:0;color:var(--accent);cursor:pointer;padding:4px 0;font-size:14px;text-align:center}
 .login .msg{font-size:14px;min-height:1em}
 .login .msg.bad{color:var(--danger)}
@@ -257,6 +317,10 @@ body.auth .top{display:none}
 
 </head>
 <body>
+<div class="scene" aria-hidden="true">
+  <div class="day"><div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div><div class="land"></div></div>
+  <div class="night"><div class="glow"></div><span class="ember e1"></span><span class="ember e2"></span><span class="ember e3"></span><span class="ember e4"></span><span class="ember e5"></span><span class="ember e6"></span><span class="ember e7"></span><span class="ember e8"></span><div class="lava"></div></div>
+</div>
 <header class="top"><div class="wrap">
   <div class="row1">
     <label class="termpick"><span class="sr">Rozkład</span><select id="termSel"></select></label>
@@ -268,7 +332,7 @@ body.auth .top{display:none}
       <button class="btn" id="btnEdit" type="button" aria-pressed="false">
         <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span class="lbl">Edytuj</span>
       </button>
-      <button class="icon" id="btnAccount" type="button" aria-label="Konto i użytkownicy">
+      <button class="icon" id="btnAccount" type="button" aria-label="Ustawienia, wygląd i konto">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
       </button>
       <button class="icon" id="btnSettings" type="button" aria-label="Ustawienia rozkładu">
@@ -1009,6 +1073,25 @@ try{var pg=parseInt(localStorage.getItem('rz.page'),10); if(pg>=0) S.page=pg}cat
 
 $('#btnAccount').addEventListener('click',openAccount);
 
+/* ---------- theme: day (sky, sun, grass) / night (forge, lava) ---------- */
+function curTheme(){ try{return localStorage.getItem('rz.theme')||'auto'}catch(e){return 'auto'} }
+function setTheme(t){
+  try{ if(t==='auto') localStorage.removeItem('rz.theme'); else localStorage.setItem('rz.theme',t) }catch(e){}
+  if(t==='auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',t);
+  var dark=t==='dark'||(t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+  var m=document.getElementById('themeColor'); if(m) m.setAttribute('content',dark?'#140f0d':'#5fbcf5');
+}
+function themePicker(){
+  var box=h('div',{class:'themes',role:'group','aria-label':'Motyw'});
+  [['light','☀️','Dzień'],['dark','🔥','Kuźnia'],['auto','🌗','Jak w systemie']].forEach(function(o){
+    var b=h('button',{type:'button','aria-pressed':String(curTheme()===o[0])},h('span',{text:o[1]}),o[2]);
+    b.addEventListener('click',function(){ setTheme(o[0]); box.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))}) });
+    box.append(b);
+  });
+  return box;
+}
+if(window.matchMedia){ var tmq=matchMedia('(prefers-color-scheme: dark)'); if(tmq.addEventListener) tmq.addEventListener('change',function(){ if(curTheme()==='auto') setTheme('auto') }); }
+
 /* ---------- account & people ---------- */
 function openAccount(){
   var me=S.user, list=h('div');
@@ -1052,7 +1135,8 @@ function openAccount(){
     people.append(h('p',{class:'muted',text:'Dodane osoby widzą cały rozkład, mogą dodawać zadania i pliki, ale zmieniać i usuwać tylko swoje.'}),
       h('div',{class:'two'},field('E-mail','mb-email',em),field('Imię (opcjonalnie)','mb-name',nm)),err,h('div',{class:'actions'},addB));
   }
-  accountSheet.sheet.replaceChildren(sheetHead('Konto',accountSheet),
+  accountSheet.sheet.replaceChildren(sheetHead('Ustawienia',accountSheet),
+    h('div',{class:'sec'},h('h3',{text:'Wygląd'}),themePicker()),
     h('div',{class:'mrow'},h('div',{class:'n'},h('b',{text:'Zalogowano'}),h('span',{text:me.email})),h('span',{class:'role',text:isOwner()?'właściciel':'członek'})),
     h('div',{class:'actions',style:'margin-bottom:18px'},h('button',{class:'btn',type:'button',onclick:function(){accountSheet.close(); SB.auth.signOut()}},'Wyloguj się')),
     people);
@@ -1061,26 +1145,51 @@ function openAccount(){
 
 /* ---------- sign in ---------- */
 var AUTHERR={'Invalid login credentials':'Zły e-mail lub hasło.','Email not confirmed':'Najpierw potwierdź e-mail — kliknij link w wiadomości, którą dostałeś(-aś).','User already registered':'To konto już istnieje — zaloguj się.'};
-function authMsg(e){var m=e&&e.message||''; return AUTHERR[m]||(/rate limit/i.test(m)?'Za dużo prób. Poczekaj chwilę.':/Password should be/i.test(m)?'Hasło musi mieć co najmniej 6 znaków.':'Coś poszło nie tak: '+m)}
+function authMsg(e){
+  var m=e&&e.message||'', n=/at least (\d+)/i.exec(m);
+  return AUTHERR[m]||(/rate limit/i.test(m)?'Za dużo prób. Poczekaj chwilę.':/Password should be/i.test(m)?'Hasło musi mieć co najmniej '+(n?n[1]:'6')+' znaków (ten limit ustawia Supabase).':'Coś poszło nie tak: '+m);
+}
+var PW_MIN=4, PW_OK=/^[\x21-\x7E]+$/; /* Latin letters, digits and symbols only; no spaces, no Polish/Ukrainian letters */
+function pwProblem(p,p2){
+  if(p.length<PW_MIN) return 'Hasło musi mieć co najmniej '+PW_MIN+' znaki.';
+  if(!PW_OK.test(p)) return 'Hasło może zawierać tylko litery łacińskie (bez polskich znaków), cyfry i znaki specjalne — bez spacji.';
+  if(p!==p2) return 'Hasła nie są takie same.';
+  return '';
+}
+function eyeIcon(off){
+  var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24');
+  s.innerHTML=off?'<path d="M3 3l18 18"/><path d="M10.6 6.2A9.9 9.9 0 0 1 12 6c5 0 8.5 4.2 9.5 6-.4.8-1.3 2.1-2.6 3.3M6.6 7.7C4.6 9.1 3.3 10.9 2.5 12c1 1.8 4.5 6 9.5 6 1.5 0 2.8-.4 4-.9"/><path d="M9.9 10a3 3 0 0 0 4.1 4.1"/>':'<path d="M2.5 12C3.5 10.2 7 6 12 6s8.5 4.2 9.5 6c-1 1.8-4.5 6-9.5 6s-8.5-4.2-9.5-6z"/><circle cx="12" cy="12" r="3"/>';
+  return s;
+}
 function showLogin(mode){
   mode=mode||'in';
   document.body.classList.add('auth'); S.ready=false; S.user=null; S.role=null;
   [accountSheet,settingsSheet,editorSheet,subjectSheet,subjectsSheet].forEach(function(s){s.close()});
   var em=h('input',{type:'email',placeholder:'E-mail',autocomplete:'email','aria-label':'E-mail'});
-  var pw=h('input',{type:'password',placeholder:mode==='new'?'Nowe hasło (min. 6 znaków)':'Hasło',autocomplete:mode==='in'?'current-password':'new-password','aria-label':'Hasło'});
+  var twice=mode==='up'||mode==='new';
+  var pw=h('input',{type:'password',placeholder:mode==='new'?'Nowe hasło':'Hasło',autocomplete:mode==='in'?'current-password':'new-password','aria-label':'Hasło'});
+  var pw2=twice?h('input',{type:'password',placeholder:'Powtórz hasło',autocomplete:'new-password','aria-label':'Powtórz hasło'}):null;
+  var eye=h('button',{class:'eye',type:'button','aria-label':'Pokaż hasło','aria-pressed':'false',title:'Pokaż hasło'},eyeIcon(false));
+  eye.addEventListener('click',function(){
+    var show=pw.type==='password'; pw.type=show?'text':'password'; if(pw2) pw2.type=pw.type;
+    eye.setAttribute('aria-pressed',String(show)); var t=show?'Ukryj hasło':'Pokaż hasło'; eye.setAttribute('aria-label',t); eye.title=t; eye.replaceChildren(eyeIcon(show));
+  });
+  var pwBox=h('div',{class:'pwrow'},pw,eye);
+  var pwBox2=pw2?h('div',{class:'pwrow'},pw2):null;
   var msg=h('div',{class:'msg',role:'status'});
   var go=h('button',{class:'btn primary',type:'submit'},{in:'Zaloguj się',up:'Załóż konto',reset:'Wyślij link',new:'Zapisz hasło'}[mode]);
   function say(t,bad){msg.textContent=t; msg.className='msg'+(bad?' bad':'')}
   var form=h('form',{class:'login'},
     h('h1',{text:'Rozkład 3I3'}),
     h('p',{text:{in:'Zaloguj się, żeby zobaczyć rozkład i zadania.',up:'Konto założysz tylko na e-mail, który dodał właściciel.',reset:'Wyślemy link do ustawienia nowego hasła.',new:'Ustaw nowe hasło.'}[mode]}),
-    mode==='new'?null:em, mode==='reset'?null:pw, go, msg,
+    mode==='new'?null:em, mode==='reset'?null:pwBox, pwBox2, twice?h('div',{class:'rule',text:'Hasło: minimum '+PW_MIN+' znaki, tylko litery łacińskie, cyfry i znaki specjalne.'}):null, go, msg,
     mode==='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('up')}},'Nie mam konta — załóż'):null,
     mode==='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('reset')}},'Nie pamiętam hasła'):null,
     mode!=='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('in')}},'Wróć do logowania'):null);
   form.addEventListener('submit',async function(ev){
     ev.preventDefault(); say(''); go.disabled=true;
     var e=em.value.trim().toLowerCase(), p=pw.value;
+    if(twice){ var bad=pwProblem(p,pw2.value); if(bad){ say(bad,true); go.disabled=false; return } }
     try{
       var here=location.origin+location.pathname;
       if(mode==='in'){

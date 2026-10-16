@@ -1177,7 +1177,7 @@ function openMenu(){
   /* account */
   out.push(group('Konto',[
     fold(IC.pass,'Zmień hasło','',[passwordChanger()],false),
-    h('button',{class:'mlink',type:'button',onclick:function(){accountSheet.close(); SB.auth.signOut()}},
+    h('button',{class:'mlink',type:'button',onclick:function(){accountSheet.close(); logout()}},
       h('span',{class:'mi'}),h('span',{class:'mt'},h('b',{text:'Wyloguj się'})))
   ]));
   var outBtn=out[out.length-1][1].lastChild; var ic=document.createElementNS('http://www.w3.org/2000/svg','svg'); ic.setAttribute('viewBox','0 0 24 24'); ic.innerHTML=IC.out; $('.mi',outBtn).append(ic);
@@ -1303,6 +1303,12 @@ function showLogin(mode){
 var starting=null;
 function start(){ if(!starting) starting=startNow().finally(function(){starting=null}); return starting }
 var recovering=/type=recovery/.test(location.hash+location.search);
+/* sign out on this device even if the server can't be reached or the session already expired */
+async function logout(){
+  try{ await SB.auth.signOut({scope:'local'}) }catch(e){}
+  try{ for(var i=localStorage.length-1;i>=0;i--){ var k=localStorage.key(i); if(/^sb-.*-auth-token/.test(k)) localStorage.removeItem(k) } }catch(e){}
+  showLogin();
+}
 async function startNow(){
   var s=await SB.auth.getSession(), session=s.data&&s.data.session;
   if(recovering&&session){ showLogin('new'); return }
@@ -1315,7 +1321,7 @@ async function startNow(){
     document.body.classList.add('auth'); applyTheme();
     $('#app').replaceChildren(h('div',{class:'login'},h('h1',{text:'Brak dostępu'}),
       h('p',{text:'Konto '+S.user.email+' nie zostało dodane do tego rozkładu. Poproś właściciela, żeby Cię dodał.'}),
-      h('button',{class:'btn',type:'button',onclick:function(){SB.auth.signOut()}},'Wyloguj się')));
+      h('button',{class:'btn',type:'button',onclick:function(){logout()}},'Wyloguj się')));
     return;
   }
   S.role=m.data.role;

@@ -50,16 +50,16 @@
 :root[data-theme="dark"]{
   /* dark: the forge after hours — soot and cast iron, lit by one piece of steel at about 1000 °C.
      Lesson types use steel temper colours (straw, bronze, violet, blue), so they belong to the same material. */
-  --bg:#131210; --surface:#1b1917; --surface-2:#221f1c; --ink:#f1e9de; --ink-2:#a59b8f; --line:#2f2b27;
-  --accent:#ffa552; --accent-hot:#ffd39e; --accent-ink:#2a1300; --danger:#ff7a5c; --scrim:rgba(5,4,3,.72);
+  --bg:#100e0d; --surface:#181513; --surface-2:#211d1a; --ink:#ffe3c6; --ink-2:#b39077; --line:#2d2723;
+  --accent:#ff9b45; --accent-hot:#ffc78e; --accent-ink:#2a1300; --danger:#ff7a5c; --scrim:rgba(5,4,3,.72);
   --top:rgba(19,18,16,.9); --glow:0 0 0 1px rgba(255,165,82,.35),0 6px 24px rgba(255,140,50,.10); --card-shadow:none;
   --molten:linear-gradient(90deg,rgba(255,120,30,0) 0%,#ff7a1e 20%,#ffa552 38%,#ffe2b8 50%,#ffa552 62%,#ff7a1e 80%,rgba(255,120,30,0) 100%);
-  --wyk-bd:#ffa552; --wyk-bg:#2a2119;
-  --lab-bd:#7f9ccc; --lab-bg:#1d2027;
-  --proj-bd:#c98a5a; --proj-bg:#261f1a;
-  --lek-bd:#dcc58e; --lek-bg:#24221b;
-  --cw-bd:#a689c7; --cw-bg:#221e26;
-  --inne-bd:#8f8a84; --inne-bg:#211f1d; --band:#171614;
+  --wyk-bd:#ff9b45; --wyk-bg:#2a1c12;
+  --lab-bd:#4fd6a4; --lab-bg:#132520;
+  --proj-bd:#ff7092; --proj-bg:#2b161c;
+  --lek-bd:#f2d45c; --lek-bg:#272313;
+  --cw-bd:#ad8cff; --cw-bg:#1f1a2c;
+  --inne-bd:#9d948c; --inne-bg:#201d1b; --band:#141110;
   color-scheme:dark;
 }
 :root[data-theme="neutral"]{
@@ -85,13 +85,14 @@
 :root[data-theme="dark"] .chip.has::after{background:var(--accent)}
 :root[data-theme="dark"] .chip[aria-selected="true"].has::after{background:var(--accent-ink)}
 /* lessons: iron plates with a thin temper-coloured edge and a faint warmth of the same hue */
-:root[data-theme="dark"] .blk{background:linear-gradient(180deg,var(--k-bg),var(--surface) 85%);border:1px solid var(--line);border-left:2px solid var(--k-bd);transition:border-color .15s,box-shadow .15s}
-:root[data-theme="dark"] .blk:hover{border-color:#4a433c;border-left-color:var(--k-bd);box-shadow:0 8px 28px rgba(0,0,0,.35);filter:none}
+:root[data-theme="dark"] .blk{background:var(--k-bg);background:linear-gradient(160deg,color-mix(in srgb,var(--k-bd) 14%,var(--surface)),color-mix(in srgb,var(--k-bd) 4%,var(--surface)) 80%);border:1px solid color-mix(in srgb,var(--k-bd) 22%,var(--line));border-left:3px solid var(--k-bd);transition:border-color .15s,box-shadow .2s}
+:root[data-theme="dark"] .blk:hover{border-color:color-mix(in srgb,var(--k-bd) 45%,var(--line));border-left-color:var(--k-bd);box-shadow:0 0 0 1px color-mix(in srgb,var(--k-bd) 25%,transparent),0 10px 30px color-mix(in srgb,var(--k-bd) 14%,transparent);filter:none}
+:root[data-theme="dark"] .blk .te{color:var(--ink-2)}
 :root[data-theme="dark"] .blk .kind{color:var(--k-bd);opacity:.95}
 :root[data-theme="dark"] .blk .rm{color:var(--ink)}
 :root[data-theme="dark"] .blk .hw{background:var(--accent);color:var(--accent-ink)}
-:root[data-theme="dark"] .card{border:1px solid var(--line);border-left:2px solid var(--k-bd)}
-:root[data-theme="dark"] .card .chead{background:linear-gradient(180deg,var(--k-bg),var(--surface))}
+:root[data-theme="dark"] .card{border:1px solid color-mix(in srgb,var(--k-bd) 22%,var(--line));border-left:3px solid var(--k-bd)}
+:root[data-theme="dark"] .card .chead{background:var(--k-bg);background:linear-gradient(160deg,color-mix(in srgb,var(--k-bd) 14%,var(--surface)),color-mix(in srgb,var(--k-bd) 4%,var(--surface)))}
 :root[data-theme="dark"] .card .ckind{color:var(--k-bd)}
 :root[data-theme="dark"] .ctask i{background:var(--k-bd)}
 :root[data-theme="dark"] .gap{border-color:var(--line);background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}

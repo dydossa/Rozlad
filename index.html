@@ -1161,7 +1161,7 @@ function passwordChanger(){
   var msg=h('div',{class:'msg',role:'status'});
   var go=h('button',{class:'btn primary',type:'submit'},'Zapisz nowe hasło');
   var form=h('form',{class:'pwform'},h('div',{class:'pwrow'},pw,eye),h('div',{class:'pwrow'},pw2),
-    h('div',{class:'rule',text:'Minimum '+PW_MIN+' znaki — litery łacińskie, cyfry, spacje i znaki specjalne.'}),
+    h('div',{class:'rule',text:'Minimum '+PW_MIN+' znaków — litery łacińskie, cyfry, spacje i znaki specjalne.'}),
     h('div',{class:'actions'},go),msg);
   form.addEventListener('submit',async function(ev){
     ev.preventDefault(); msg.className='msg'; msg.textContent='';
@@ -1181,11 +1181,11 @@ function authMsg(e){
   var m=e&&e.message||'', n=/at least (\d+)/i.exec(m);
   return AUTHERR[m]||(/rate limit/i.test(m)?'Za dużo prób. Poczekaj chwilę.':/Password should be/i.test(m)?'Hasło musi mieć co najmniej '+(n?n[1]:'6')+' znaków (ten limit ustawia Supabase).':'Coś poszło nie tak: '+m);
 }
-var PW_MIN=4, PW_OK=/^[\x20-\x7E]+$/; /* Latin letters, digits, symbols and spaces; no Polish/Ukrainian letters */
+var PW_MIN=6, PW_OK=/^[\x20-\x7E]+$/; /* Latin letters, digits, symbols and spaces; no Polish/Ukrainian letters */
 var lastEmail=''; try{lastEmail=localStorage.getItem('rz.email')||''}catch(e){}
 function rememberEmail(v){ lastEmail=v; try{ if(v) localStorage.setItem('rz.email',v) }catch(e){} }
 function pwProblem(p,p2){
-  if(p.length<PW_MIN) return 'Hasło musi mieć co najmniej '+PW_MIN+' znaki.';
+  if(p.length<PW_MIN) return 'Hasło musi mieć co najmniej '+PW_MIN+' znaków.';
   if(!PW_OK.test(p)) return 'Hasło może zawierać tylko litery łacińskie (bez polskich znaków), cyfry, spacje i znaki specjalne.';
   if(p!==p2) return 'Hasła nie są takie same.';
   return '';
@@ -1217,7 +1217,7 @@ function showLogin(mode){
   var form=h('form',{class:'login'},
     h('h1',{text:'Rozkład 3I3'}),
     h('p',{text:{in:'Zaloguj się, żeby zobaczyć rozkład i zadania.',up:'Konto założysz tylko na e-mail, który dodał właściciel.',reset:'Wyślemy link do ustawienia nowego hasła.',new:'Ustaw nowe hasło.'}[mode]}),
-    mode==='new'?null:em, mode==='reset'?null:pwBox, pwBox2, twice?h('div',{class:'rule',text:'Hasło: minimum '+PW_MIN+' znaki — litery łacińskie, cyfry, spacje i znaki specjalne.'}):null, go, msg,
+    mode==='new'?null:em, mode==='reset'?null:pwBox, pwBox2, twice?h('div',{class:'rule',text:'Hasło: minimum '+PW_MIN+' znaków — litery łacińskie, cyfry, spacje i znaki specjalne.'}):null, go, msg,
     mode==='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('up')}},'Nie mam konta — załóż'):null,
     mode==='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('reset')}},'Nie pamiętam hasła'):null,
     mode!=='in'?h('button',{class:'lnk',type:'button',onclick:function(){showLogin('in')}},'Wróć do logowania'):null);

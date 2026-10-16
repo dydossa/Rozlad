@@ -279,6 +279,10 @@ body.auth .top{display:none}
 .pwrow .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;display:grid;place-items:center;border:0;background:transparent;color:var(--ink-2);border-radius:8px;cursor:pointer}
 .pwrow .eye:hover{color:var(--ink)}
 .pwrow .eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pwform{display:grid;gap:10px}
+.pwform input{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface-2);font-size:16px}
+.pwform .rule{font-size:12.5px;color:var(--ink-2)}
+.pwform .msg{font-size:14px;min-height:1em}.pwform .msg.bad{color:var(--danger)}
 .login .rule{font-size:12.5px;color:var(--ink-2);margin-top:-6px}
 .login .lnk{background:none;border:0;color:var(--accent);cursor:pointer;padding:4px 0;font-size:14px;text-align:center}
 .login .msg{font-size:14px;min-height:1em}
@@ -1137,14 +1141,42 @@ function openAccount(){
   }
   accountSheet.sheet.replaceChildren(sheetHead('Ustawienia',accountSheet),
     h('div',{class:'sec'},h('h3',{text:'Wygląd'}),themePicker()),
+    h('div',{class:'sec'},h('h3',{text:'Zmień hasło'}),passwordChanger()),
     h('div',{class:'mrow'},h('div',{class:'n'},h('b',{text:'Zalogowano'}),h('span',{text:me.email})),h('span',{class:'role',text:isOwner()?'właściciel':'członek'})),
     h('div',{class:'actions',style:'margin-bottom:18px'},h('button',{class:'btn',type:'button',onclick:function(){accountSheet.close(); SB.auth.signOut()}},'Wyloguj się')),
     people);
   accountSheet.open();
 }
 
+/* ---------- change password (signed in) ---------- */
+function passwordChanger(){
+  var NO={autocapitalize:'none',autocorrect:'off',spellcheck:'false',autocomplete:'new-password'};
+  var pw=h('input',Object.assign({type:'password',placeholder:'Nowe hasło','aria-label':'Nowe hasło'},NO));
+  var pw2=h('input',Object.assign({type:'password',placeholder:'Powtórz nowe hasło','aria-label':'Powtórz nowe hasło'},NO));
+  var eye=h('button',{class:'eye',type:'button','aria-label':'Pokaż hasło','aria-pressed':'false',title:'Pokaż hasło'},eyeIcon(false));
+  eye.addEventListener('click',function(){
+    var show=pw.type==='password'; pw.type=pw2.type=show?'text':'password';
+    eye.setAttribute('aria-pressed',String(show)); var t=show?'Ukryj hasło':'Pokaż hasło'; eye.setAttribute('aria-label',t); eye.title=t; eye.replaceChildren(eyeIcon(show));
+  });
+  var msg=h('div',{class:'msg',role:'status'});
+  var go=h('button',{class:'btn primary',type:'submit'},'Zapisz nowe hasło');
+  var form=h('form',{class:'pwform'},h('div',{class:'pwrow'},pw,eye),h('div',{class:'pwrow'},pw2),
+    h('div',{class:'rule',text:'Minimum '+PW_MIN+' znaki — litery łacińskie, cyfry, spacje i znaki specjalne.'}),
+    h('div',{class:'actions'},go),msg);
+  form.addEventListener('submit',async function(ev){
+    ev.preventDefault(); msg.className='msg'; msg.textContent='';
+    var bad=pwProblem(pw.value,pw2.value); if(bad){ msg.className='msg bad'; msg.textContent=bad; return }
+    go.disabled=true;
+    var r=await SB.auth.updateUser({password:pw.value});
+    go.disabled=false;
+    if(r.error){ msg.className='msg bad'; msg.textContent=authMsg(r.error); return }
+    pw.value=pw2.value=''; msg.textContent='Hasło zmienione. Następnym razem zaloguj się nowym hasłem.'; toast('Hasło zmienione');
+  });
+  return form;
+}
+
 /* ---------- sign in ---------- */
-var AUTHERR={'Invalid login credentials':'Zły e-mail lub hasło.','Email not confirmed':'Najpierw potwierdź e-mail — kliknij link w wiadomości, którą dostałeś(-aś).','User already registered':'To konto już istnieje — zaloguj się.'};
+var AUTHERR={'Invalid login credentials':'Zły e-mail lub hasło.','Email not confirmed':'Najpierw potwierdź e-mail — kliknij link w wiadomości, którą dostałeś(-aś).','User already registered':'To konto już istnieje — zaloguj się.','New password should be different from the old password.':'Nowe hasło musi być inne niż obecne.'};
 function authMsg(e){
   var m=e&&e.message||'', n=/at least (\d+)/i.exec(m);
   return AUTHERR[m]||(/rate limit/i.test(m)?'Za dużo prób. Poczekaj chwilę.':/Password should be/i.test(m)?'Hasło musi mieć co najmniej '+(n?n[1]:'6')+' znaków (ten limit ustawia Supabase).':'Coś poszło nie tak: '+m);
@@ -1209,7 +1241,7 @@ function showLogin(mode){
         say('Jeśli konto istnieje, link jest już w skrzynce.');
       } else if(mode==='new'){
         var nu=await SB.auth.updateUser({password:p}); if(nu.error) throw nu.error;
-        toast('Hasło zmienione'); history.replaceState(null,'',location.pathname); start();
+        recovering=false; toast('Hasło zmienione'); history.replaceState(null,'',location.pathname); start();
       }
     }catch(err){ say(authMsg(err),true); }
     go.disabled=false;
@@ -1219,8 +1251,10 @@ function showLogin(mode){
 }
 var starting=null;
 function start(){ if(!starting) starting=startNow().finally(function(){starting=null}); return starting }
+var recovering=/type=recovery/.test(location.hash+location.search);
 async function startNow(){
   var s=await SB.auth.getSession(), session=s.data&&s.data.session;
+  if(recovering&&session){ showLogin('new'); return }
   if(!session){ showLogin(); return }
   S.user={id:session.user.id,email:(session.user.email||'').toLowerCase()};
   document.body.classList.remove('auth');
@@ -1245,7 +1279,7 @@ async function startNow(){
   }
   SB=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   SB.auth.onAuthStateChange(function(ev){
-    if(ev==='PASSWORD_RECOVERY'){ setTimeout(function(){showLogin('new')},0); return }
+    if(ev==='PASSWORD_RECOVERY'){ recovering=true; setTimeout(function(){showLogin('new')},0); return }
     if(ev==='SIGNED_OUT'){ setTimeout(function(){showLogin()},0); return }
     if(ev==='SIGNED_IN'&&!S.user){ setTimeout(start,0) }
   });

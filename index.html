@@ -341,6 +341,11 @@ body.auth .top{display:none}
 .subjrow:hover{background:var(--surface)}
 .subjrow .n{flex:1;min-width:0;font-weight:500;overflow-wrap:anywhere}
 .subjrow .s{font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap}
+.subjrow[class*="k-"]{border-left:3px solid var(--k-bd)}
+.subjrow .sk{display:block;font-size:11.5px;font-weight:500;color:var(--k-bd);margin-top:2px}
+:root[data-theme="light"] .subjrow .sk{color:color-mix(in srgb,var(--k-bd) 80%,#000)}
+.kpill{flex:none;font-size:12px;font-weight:600;border-radius:99px;padding:2px 10px;background:var(--k-bg);color:var(--k-bd);border:1px solid var(--k-bd)}
+:root[data-theme="light"] .kpill{color:color-mix(in srgb,var(--k-bd) 75%,#000)}
 .daychips{display:flex;flex-wrap:wrap;gap:6px}
 .daychips button{border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:6px 10px;cursor:pointer}
 .daychips button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -388,7 +393,7 @@ var KINDS=['Wykład','Laboratorium','Projekt','Lektorat','Ćwiczenia','Inne'];
 var KCLS={'Wykład':'wyk','Laboratorium':'lab','Projekt':'proj','Lektorat':'lek','Ćwiczenia':'cw','Inne':'inne'};
 var COL=120, BH=134, GAP=6; /* every class is two hours, from a full hour to a full hour */
 var S={terms:[],subjects:[],slots:[],homework:[],files:[],members:[],termId:null,week:1,page:0,edit:false,ready:false,user:null,role:null};
-var SB=null, dragging=false, pendingRender=false, open={id:null,week:null};
+var SB=null, dragging=false, pendingRender=false, open={id:null,week:null,kind:null};
 function isOwner(){return S.role==='owner'}
 function canEdit(x){return isOwner()||(S.user&&x.author===S.user.id)}
 function authorName(x){
@@ -442,16 +447,29 @@ function curTerm(){return S.terms.find(function(t){return t.id===S.termId})||nul
 function subj(id){return S.subjects.find(function(s){return s.id===id})||null}
 function weekSlots(w){return S.slots.filter(function(s){return s.termId===S.termId&&s.week===w})}
 function termSlots(){return S.slots.filter(function(s){return s.termId===S.termId})}
-function inNote(week,sid){return function(x){return x.termId===S.termId&&x.week===week&&x.subjectId===sid}}
-function getNote(week,sid){
-  return {homework:S.homework.filter(inNote(week,sid)),files:S.files.filter(inNote(week,sid))};
+/* Homework and files belong to one subject AND one kind of class: a lecture and a lab of the same subject are separate.
+   Old entries without a kind go to the lecture of that zjazd (or to the first kind the subject has there). */
+function defaultKind(week,sid){
+  var ks=weekSlots(week).filter(function(z){return z.subjectId===sid}).map(function(z){return z.kind});
+  return ks.indexOf('Wykład')>=0?'Wykład':(ks[0]||'Wykład');
+}
+function inNote(week,sid,kind){
+  var dk=null;
+  return function(x){
+    if(x.termId!==S.termId||x.week!==week||x.subjectId!==sid) return false;
+    var k=x.kind; if(!k){ if(dk===null) dk=defaultKind(week,sid); k=dk }
+    return k===kind;
+  };
+}
+function getNote(week,sid,kind){
+  return {homework:S.homework.filter(inNote(week,sid,kind)),files:S.files.filter(inNote(week,sid,kind))};
 }
 function openHw(week){
   return S.homework.filter(function(x){return x.termId===S.termId&&x.week===week&&!x.done}).length;
 }
 function openHwDay(week,day){
-  var ids={}; weekSlots(week).forEach(function(z){if(z.day===day) ids[z.subjectId]=1});
-  return Object.keys(ids).reduce(function(n,sid){return n+getNote(week,sid).homework.filter(function(y){return !y.done}).length},0);
+  var ids={}; weekSlots(week).forEach(function(z){if(z.day===day) ids[z.subjectId+'\u0001'+z.kind]=z});
+  return Object.keys(ids).reduce(function(n,k){var z=ids[k]; return n+getNote(week,z.subjectId,z.kind).homework.filter(function(y){return !y.done}).length},0);
 }
 
 /* ---------- database (Supabase) ---------- */
@@ -661,7 +679,7 @@ function renderPhone(app,t){
   },{passive:true});
 }
 function card(s){
-  var sb=subj(s.subjectId), kc=KCLS[s.kind]||'inne', note=getNote(s.week,s.subjectId);
+  var sb=subj(s.subjectId), kc=KCLS[s.kind]||'inne', note=getNote(s.week,s.subjectId,s.kind);
   var openT=(note.homework||[]).filter(function(x){return !x.done}), doneN=(note.homework||[]).length-openT.length, nf=(note.files||[]).length;
   var head=h('div',{class:'chead'},
     h('div',{class:'ctime'},h('b',{text:fmt(s.start)}),fmt(s.end)),
@@ -673,7 +691,7 @@ function card(s){
   if(!openT.length) tasks.append(h('div',{class:'cnone',text:doneN?'Wszystko zrobione.':'Brak zadań.'}));
   else if(openT.length>2||doneN) tasks.append(h('div',{class:'cdone',text:(openT.length>2?'+'+(openT.length-2)+' więcej':'')+(openT.length>2&&doneN?' · ':'')+(doneN?'Wykonane: '+doneN:'')}));
   var c=h('button',{class:'card k-'+kc,type:'button','aria-label':(sb?sb.name:'')+', '+s.kind+', '+fmt(s.start)+'–'+fmt(s.end)},head,tasks);
-  c.addEventListener('click',function(){openSubject(s.subjectId,s.week)});
+  c.addEventListener('click',function(){openSubject(s.subjectId,s.week,s.kind)});
   return c;
 }
 
@@ -729,7 +747,7 @@ function renderDesktop(app,t){
 }
 function block(s,lane,gs,T){
   var sb=subj(s.subjectId), kc=KCLS[s.kind]||'inne';
-  var nOpen=getNote(s.week,s.subjectId).homework.filter(function(x){return !x.done}).length;
+  var nOpen=getNote(s.week,s.subjectId,s.kind).homework.filter(function(x){return !x.done}).length;
   var l=(s.start-gs)/T*100, w=(s.end-s.start)/T*100;
   var b=h('div',{class:'blk k-'+kc,tabindex:'0',role:'button',title:sb?sb.name:'',
     style:'left:calc('+l+'% + 4px);width:calc('+w+'% - 8px);top:'+(GAP+lane*(BH+GAP))+'px;height:'+BH+'px',
@@ -738,12 +756,12 @@ function block(s,lane,gs,T){
     h('div',{class:'nm',text:sb?sb.name:'(bez nazwy)'}),
     s.room?h('div',{class:'rm',text:s.room}):null,
     s.teacher?h('div',{class:'te',text:s.teacher}):null);
-  b.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault(); S.edit?openEditor(s):openSubject(s.subjectId,s.week)} });
+  b.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault(); S.edit?openEditor(s):openSubject(s.subjectId,s.week,s.kind)} });
   b.addEventListener('pointerdown',function(e){
     if(!S.edit||(e.button!==undefined&&e.button!==0)) return;
     startDrag(e,b,s);
   });
-  b.addEventListener('click',function(){ if(!S.edit) openSubject(s.subjectId,s.week) });
+  b.addEventListener('click',function(){ if(!S.edit) openSubject(s.subjectId,s.week,s.kind) });
   return b;
 }
 function startDrag(e,b,s){
@@ -847,6 +865,12 @@ function openEditor(s){
       if(!ok){saveBtn.disabled=false; return}
       var data={termId:t.id,week:s.week,subjectId:sid,day:dSel.value,start:a,end:b,kind:kSel.value,room:rm.value.trim(),teacher:tc.value.trim()};
       var jobs=[write('slots/'+(s.id||uid()),data,'set')];
+      if(s.id&&(s.kind!==data.kind||s.subjectId!==sid)){
+        var stay=weekSlots(s.week).some(function(z){return z.id!==s.id&&z.subjectId===s.subjectId&&z.kind===s.kind});
+        if(!stay){ var nt=getNote(s.week,s.subjectId,s.kind);
+          nt.homework.forEach(function(x){jobs.push(write('homework/'+x.id,{subjectId:sid,kind:data.kind},'update'))});
+          nt.files.forEach(function(x){jobs.push(write('files/'+x.id,{subjectId:sid,kind:data.kind},'update'))}); }
+      }
       extra.forEach(function(w){
         var dup=weekSlots(w).some(function(z){return z.subjectId===sid&&z.day===data.day&&z.start===a});
         if(!dup){ var c=Object.assign({},data); c.week=w; jobs.push(write('slots/'+uid(),c,'set')); }
@@ -866,9 +890,10 @@ function openEditor(s){
 
 /* ---------- subject sheet (one subject in one zjazd) ---------- */
 var subjParts={};
-function openSubject(id,week){
+function openSubject(id,week,kind){
   if(!subj(id)) return;
-  open={id:id,week:week};
+  kind=kind||defaultKind(week,id);
+  open={id:id,week:week,kind:kind};
   var sb=subj(id), nameI=h('input',{class:'title',type:'text',value:sb.name,'aria-label':'Nazwa przedmiotu',id:'sj-name',readonly:!isOwner()});
   nameI.addEventListener('change',function(){
     var v=nameI.value.trim(); if(!v){nameI.value=subj(id).name; return}
@@ -880,7 +905,7 @@ function openSubject(id,week){
   function addHw(){
     var tx=hwText.value.trim(); if(!tx) return;
     hwText.value='';
-    write('homework/'+uid(),{termId:S.termId,week:week,subjectId:id,text:tx,done:false},'insert').then(function(ok){ if(!ok) hwText.value=tx });
+    write('homework/'+uid(),{termId:S.termId,week:week,subjectId:id,kind:kind,text:tx,done:false},'insert').then(function(ok){ if(!ok) hwText.value=tx });
   }
   addBtn.addEventListener('click',addHw);
   hwText.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault(); addHw()} });
@@ -901,7 +926,7 @@ function openSubject(id,week){
       try{
         var up=await SB.storage.from('files').upload(path,f,{contentType:f.type||'application/octet-stream',upsert:false});
         if(up.error) throw up.error;
-        var ok=await write('files/'+fid,{termId:S.termId,week:week,subjectId:id,name:f.name,type:f.type||'',size:f.size,path:path},'insert');
+        var ok=await write('files/'+fid,{termId:S.termId,week:week,subjectId:id,kind:kind,name:f.name,type:f.type||'',size:f.size,path:path},'insert');
         if(!ok) await removeStored([path]);
       }catch(e){
         console.error(e);
@@ -925,13 +950,13 @@ function openSubject(id,week){
   });
 
   subjectSheet.sheet.replaceChildren(
-    sheetHead('',subjectSheet,h('div',{style:'display:flex;gap:8px;align-items:center;flex:1;min-width:0'},nameI,h('span',{class:'wkpill',text:'zjazd '+week}))),
+    sheetHead('',subjectSheet,h('div',{style:'display:flex;gap:8px;align-items:center;flex:1;min-width:0'},nameI,h('span',{class:'kpill k-'+(KCLS[kind]||'inne'),text:kind}),h('span',{class:'wkpill',text:'zjazd '+week}))),
     h('div',{class:'sec'},h('h3',{text:'Zadania domowe'}),subjParts.hwList,
       h('div',{class:'addrow'},hwText,h('div',null,addBtn))),
     h('div',{class:'sec'},h('h3',{text:'Pliki'}),subjParts.files,drop,fileIn),
     h('div',{class:'sec'},h('h3',{text:'Zajęcia w tym zjeździe'}),subjParts.info),
     isPhone()||!isOwner()?null:h('div',{class:'sec'},delBtn));
-  subjectSheet.onClose=function(){open={id:null,week:null}};
+  subjectSheet.onClose=function(){open={id:null,week:null,kind:null}};
   renderSubject();
   subjectSheet.open();
 }
@@ -952,10 +977,10 @@ function guessType(f){
 function sizeLabel(b){return b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'}
 function renderSubject(){
   var sb=subj(open.id); if(!sb){subjectSheet.close(); return}
-  var week=open.week, note=getNote(week,sb.id);
+  var week=open.week, kind=open.kind, note=getNote(week,sb.id,kind);
   var nameI=$('#sj-name',subjectSheet.sheet); if(nameI&&document.activeElement!==nameI) nameI.value=sb.name;
   var t=curTerm(), order=(t&&t.days)||[];
-  var mine=weekSlots(week).filter(function(z){return z.subjectId===sb.id});
+  var mine=weekSlots(week).filter(function(z){return z.subjectId===sb.id&&z.kind===kind});
   mine.sort(function(a,b){return order.indexOf(a.day)-order.indexOf(b.day)||a.start-b.start});
   subjParts.info.replaceChildren.apply(subjParts.info,mine.length?mine.map(function(z){
     var k=KCLS[z.kind]||'inne';
@@ -1027,12 +1052,12 @@ function openSubjects(){
 function renderSubjects(){
   if(!listBox) return;
   var wk=$('#sl-wk',subjectsSheet.sheet); if(wk) wk.textContent='zjazd '+S.week;
-  var ids=[]; weekSlots(S.week).forEach(function(z){ if(ids.indexOf(z.subjectId)<0) ids.push(z.subjectId) });
-  listBox.replaceChildren.apply(listBox,ids.length?ids.map(function(id){
-    var sb=subj(id); if(!sb) return null;
-    var n=getNote(S.week,id), o=(n.homework||[]).filter(function(x){return !x.done}).length, f=(n.files||[]).length;
-    return h('button',{class:'subjrow',type:'button',onclick:function(){openSubject(id,S.week)}},
-      h('span',{class:'n',text:sb.name}),
+  var seen={}, ids=[]; weekSlots(S.week).forEach(function(z){ var k=z.subjectId+'\u0001'+z.kind; if(!seen[k]){seen[k]=1; ids.push(z)} });
+  listBox.replaceChildren.apply(listBox,ids.length?ids.map(function(z){
+    var id=z.subjectId, sb=subj(id); if(!sb) return null;
+    var n=getNote(S.week,id,z.kind), o=(n.homework||[]).filter(function(x){return !x.done}).length, f=(n.files||[]).length;
+    return h('button',{class:'subjrow k-'+(KCLS[z.kind]||'inne'),type:'button',onclick:function(){openSubject(id,S.week,z.kind)}},
+      h('span',{class:'n'},sb.name,h('small',{class:'sk',text:z.kind})),
       h('span',{class:'s',text:((o?o+' zad.':'')+(o&&f?' · ':'')+(f?f+' plik.':''))||'pusto'}));
   }).filter(Boolean):[h('div',{class:'muted',text:'W tym zjeździe nie ma jeszcze zajęć. Kliknij „Edytuj” i dodaj je.'})]);
 }

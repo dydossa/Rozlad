@@ -386,13 +386,7 @@ body.v-stats #btnStats{background:var(--ink);color:var(--surface)}
 .st-head{display:flex;align-items:center;gap:12px;margin:6px 0 14px;flex-wrap:wrap}
 .st-head h1{margin:0;font-size:22px;line-height:1.2}
 .st-head .back svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.kpi{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;display:grid;gap:2px;min-width:0}
-.kpi b{font-size:24px;line-height:1.15;font-weight:650;letter-spacing:-.01em}
-.kpi span{font-size:13px;color:var(--ink)}
-.kpi small{font-size:12px;color:var(--ink-2)}
-:root[data-theme="dark"] .kpi b{color:var(--accent-hot)}
-.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
 .vcard{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 16px;min-width:0;overflow:hidden}
 .vcard.wide{grid-column:1/-1}
 .vh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
@@ -422,7 +416,6 @@ body.v-stats #btnStats{background:var(--ink);color:var(--surface)}
 .tt-r b{font-family:var(--mono);font-weight:600}
 .tt-r span{color:var(--ink-2)}
 @media (max-width:759px){
-  .kpis{grid-template-columns:1fr 1fr}
   .vgrid{grid-template-columns:1fr}
   .vcard{padding:12px}
 }
@@ -432,6 +425,13 @@ body.v-stats #btnStats{background:var(--ink);color:var(--surface)}
 .pk[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 :root[data-theme="dark"] .pk[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 18%,var(--surface));color:var(--accent-hot);border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
 .pk.all{border-style:dashed;margin-left:auto}
+.vsel{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:0 0 12px;padding-bottom:2px}
+.vsel::-webkit-scrollbar{display:none}
+.vsel button{flex:none;border:1px solid var(--line);background:transparent;color:var(--ink-2);font:inherit;font-size:13px;padding:5px 12px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.vsel button:hover{color:var(--ink);border-color:var(--ink-2)}
+.vsel button[aria-checked="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+:root[data-theme="dark"] .vsel button[aria-checked="true"]{background:color-mix(in srgb,var(--accent) 18%,var(--surface));color:var(--accent-hot);border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+#feedcard .st-feed{max-height:430px;overflow:auto;padding-right:6px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;background:var(--surface-2)}
 .seg button{border:0;background:transparent;color:var(--ink-2);font:inherit;font-size:13px;padding:6px 11px;border-radius:7px;cursor:pointer;white-space:nowrap}
 .seg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
@@ -1256,8 +1256,8 @@ function renderSubjects(){
 }
 
 /* ---------- statistics page: who finished which task, and when ---------- */
-var statsRange='all', statsMode='count', statsMore=20;
-try{ statsRange=localStorage.getItem('rz.stRange')||'all'; statsMode=localStorage.getItem('rz.stMode')||'count' }catch(e){}
+var statsRange='all', statsMore=20;
+try{ statsRange=localStorage.getItem('rz.stRange')||'all' }catch(e){}
 function openStats(){
   if(S.view==='stats') return;
   S.view='stats'; statsMore=20;
@@ -1358,36 +1358,32 @@ function vcard(title,sub,body,wide,id){
 }
 function noData(txt){ return h('div',{class:'muted vnone',text:txt||'Za mało danych w tym okresie.'}) }
 
-/* 1. ranking: who finishes tasks earlier in the day */
+/* 1. rankings: most tasks done / earliest in the day */
 function todMin(ms){ var d=new Date(ms); return (d.getHours()*60+d.getMinutes()-240+1440)%1440 } /* the "day" starts at 04:00 */
 function todLabel(m){ var x=(Math.round(m)+240)%1440; return pad(Math.floor(x/60))+':'+pad(x%60) }
-function chartRank(d,inner){
-  var rows=d.people.slice();
+function chartRank(d,inner,mode){
+  var rows=d.people.slice(), count=mode==='count';
   var box=h('div',{class:'rank',role:'list'});
-  var ctl=segCtl([['count','Najwięcej zadań'],['early','Najwcześniej']],statsMode,function(v){statsMode=v; try{localStorage.setItem('rz.stMode',v)}catch(e){} scheduleRender()},'Ranking');
-  if(statsMode==='count'){
-    rows.sort(function(a,b){return b.n-a.n||b.last-a.last||a.name.localeCompare(b.name)});
-  } else {
-    rows=rows.filter(function(p){return p.tods.length}).sort(function(a,b){return a.medTod-b.medTod});
-  }
-  var maxV=statsMode==='count'?Math.max(1,d.total):1440;
-  if(!rows.length) box.append(noData(statsMode==='count'?'Brak danych.':'Nikt jeszcze nic nie wykonał w tym okresie.'));
+  if(count) rows.sort(function(a,b){return b.n-a.n||b.last-a.last||a.name.localeCompare(b.name)});
+  else rows=rows.filter(function(p){return p.tods.length}).sort(function(a,b){return a.medTod-b.medTod});
+  var maxV=count?Math.max(1,d.total):1440;
+  if(!rows.length) box.append(noData(count?'Brak danych.':'Nikt jeszcze nic nie wykonał w tym okresie.'));
   rows.forEach(function(p,i){
-    var v=statsMode==='count'?p.n:p.medTod, pct=v/maxV*100;
-    var val=statsMode==='count'?p.n+' z '+d.total:todLabel(p.medTod);
+    var v=count?p.n:p.medTod, pct=v/maxV*100;
+    var val=count?p.n+' z '+d.total:todLabel(p.medTod);
     var r=h('div',{class:'rk'+(p.name==='Ty'?' me':''),role:'listitem',tabindex:'0'},
-      h('span',{class:'rk-pos'+(i<3&&(statsMode==='early'||p.n)?' medal t'+(i+1):''),text:String(i+1)}),
+      h('span',{class:'rk-pos'+(i<3&&(!count||p.n)?' medal t'+(i+1):''),text:String(i+1)}),
       h('span',{class:'rk-name',text:p.name}),
       h('span',{class:'rk-track'},h('i',{style:'width:'+Math.max(v?2:0,pct)+'%'})),
       h('span',{class:'rk-val',text:val}));
     hoverMark(r,function(e){
-      showTip(e,statsMode==='count'
+      showTip(e,count
         ?[{v:p.n+' z '+d.total,l:'wykonanych zadań'}].concat(p.last?[{v:when(p.last),l:'ostatnio'}]:[])
         :[{v:todLabel(p.medTod),l:'typowa godzina'},{v:todLabel(Math.min.apply(null,p.tods)),l:'najwcześniej'},{v:todLabel(Math.max.apply(null,p.tods)),l:'najpóźniej'},{v:String(p.tods.length),l:'zadań w próbce'}],p.name)});
     box.append(r);
   });
-  var wrap=h('div',null,ctl,box,statsMode==='early'?h('div',{class:'muted st-note',text:'Mediana godziny odhaczenia. Doba liczona od 4:00 rano.'}):null);
-  return vcard(statsMode==='count'?'Kto zrobił najwięcej':'Kto robi zadania najwcześniej',rangeLabel(d),wrap);
+  var wrap=h('div',null,box,count?null:h('div',{class:'muted st-note',text:'Mediana godziny odhaczenia. Doba liczona od 4:00 rano.'}));
+  return vcard(count?'Kto zrobił najwięcej':'Kto robi zadania najwcześniej',rangeLabel(d),wrap);
 }
 
 /* 2. cumulative line over calendar days */
@@ -1558,28 +1554,21 @@ function chartPriority(d,inner){
   return vcard('Ważność wykonanych zadań',rangeLabel(d),h('div',null,lg,svg));
 }
 
-var CHART_IDS=[['kpi','Podsumowanie'],['rank','Ranking'],['tod','Godziny osób'],['line','W czasie'],['cols','Zjazdy'],['heat','Mapa godzin'],['subj','Przedmioty'],['prio','Ważność'],['feed','Ostatnio']];
+var CHART_IDS=[['rank1','Najwięcej zadań'],['rank2','Najwcześniej'],['chart','Diagram'],['feed','Ostatnio']];
+var VARIANTS=[['line','W czasie'],['cols','Zjazdy'],['heat','Mapa godzin'],['tod','Godziny osób'],['subj','Przedmioty'],['prio','Ważność']];
+var statsChart='line';
+try{ statsChart=localStorage.getItem('rz.stChart')||'line' }catch(e){}
 var statsShow=null;
 function showSet(){
   if(statsShow) return statsShow;
-  statsShow={}; var saved=null; try{ saved=JSON.parse(localStorage.getItem('rz.stShow')||'null') }catch(e){}
+  statsShow={}; var saved=null; try{ saved=JSON.parse(localStorage.getItem('rz.stShow2')||'null') }catch(e){}
   CHART_IDS.forEach(function(c){ statsShow[c[0]]=saved?saved[c[0]]!==false:true });
   return statsShow;
 }
-function saveShow(){ try{ localStorage.setItem('rz.stShow',JSON.stringify(statsShow)) }catch(e){} }
+function saveShow(){ try{ localStorage.setItem('rz.stShow2',JSON.stringify(statsShow)) }catch(e){} }
 function renderStats(app,t){
-  if(statsMode==='speed') statsMode='early';
   var d=statsData(), narrow=app.clientWidth<760, pageW=Math.max(280,app.clientWidth), on=showSet();
-  var inner1=Math.floor((narrow?pageW-26:(pageW-14)/2-34)), innerW=Math.floor(pageW-(narrow?26:34));
-  var me=d.me, myTods=me?me.tods:[];
-  var hours=new Array(24).fill(0); d.comps.forEach(function(c){ hours[new Date(c.doneAt).getHours()]++ });
-  var hb=hours.indexOf(Math.max.apply(null,hours));
-  function kpi(v,l,sub){ return h('div',{class:'kpi'},h('b',{text:v}),h('span',{text:l}),sub?h('small',{text:sub}):null) }
-  var kpis=h('div',{class:'kpis'},
-    kpi(String(d.total),'zadań w okresie',rangeLabel(d)),
-    kpi(me?me.n+' z '+d.total:'—','zrobione przez Ciebie',d.total&&me?Math.round(me.n/d.total*100)+'%':''),
-    kpi(myTods.length?todLabel(median(myTods)):'—','Twoja typowa godzina','o której odhaczasz zadania'),
-    kpi(d.comps.length?pad(hb)+':00':'—','najczęstsza godzina','wszyscy razem'));
+  var inner1=Math.floor((narrow?pageW-26:(pageW-14)/2-34));
   function setR(v){statsRange=v; try{localStorage.setItem('rz.stRange',v)}catch(e){} scheduleRender()}
   var head=h('div',{class:'st-head'},
     h('button',{class:'btn back',type:'button',onclick:closeStats},icon('back'),h('span',{text:'Rozkład'})),
@@ -1590,8 +1579,7 @@ function renderStats(app,t){
       var b=h('button',{type:'button',class:'pk','aria-pressed':String(!!on[c[0]])},c[1]);
       b.addEventListener('click',function(){ on[c[0]]=!on[c[0]]; saveShow(); scheduleRender() });
       return b;
-    }),
-    h('button',{type:'button',class:'pk all',onclick:function(){ var all=CHART_IDS.every(function(c){return on[c[0]]}); CHART_IDS.forEach(function(c){on[c[0]]=!all}); saveShow(); scheduleRender() }},CHART_IDS.every(function(c){return on[c[0]]})?'Odznacz wszystko':'Zaznacz wszystko'));
+    }));
   var ctl=h('div',{class:'st-ctl'},segCtl([['1','Zjazd '+d.cur],['5','5 zjazdów'],['all','Wszystkie '+d.wc]],statsRange,setR,'Okres'));
   var feed=h('div',{class:'st-feed'}), list=d.comps.slice().reverse();
   list.slice(0,statsMore).forEach(function(c){
@@ -1602,18 +1590,24 @@ function renderStats(app,t){
         h('small',{text:(sb?sb.name:'?')+' · '+k+' · zjazd '+x.week}))));
   });
   if(list.length>statsMore) feed.append(h('button',{class:'btn',type:'button',onclick:function(){statsMore+=30; scheduleRender()}},'Pokaż więcej'));
+  /* one switchable chart */
+  var fn={line:chartLine,cols:chartCols,heat:chartHeat,tod:chartTod,subj:chartSubjects,prio:chartPriority};
+  if(!fn[statsChart]) statsChart='line';
+  var made=fn[statsChart](d,inner1,false), body=made?made.lastChild:noData('Wybierz większy okres, żeby zobaczyć zjazdy.');
+  var vsel=h('div',{class:'vsel',role:'radiogroup','aria-label':'Rodzaj diagramu'},VARIANTS.map(function(v){
+    var b=h('button',{type:'button',role:'radio','aria-checked':String(v[0]===statsChart)},v[1]);
+    b.addEventListener('click',function(){ statsChart=v[0]; try{localStorage.setItem('rz.stChart',v[0])}catch(e){} scheduleRender() });
+    return b;
+  }));
+  var chartCard=h('section',{class:'vcard vz'},h('div',{class:'vh'},h('h3',{text:'Diagram'}),h('span',{class:'vsub',text:rangeLabel(d)})),vsel,body);
   var cards=[
-    on.rank&&chartRank(d,inner1),
-    on.tod&&chartTod(d,inner1),
-    on.line&&chartLine(d,innerW),
-    on.cols&&chartCols(d,innerW,true),
-    on.heat&&chartHeat(d,innerW),
-    on.subj&&chartSubjects(d,inner1),
-    on.prio&&chartPriority(d,inner1),
-    on.feed&&vcard('Ostatnio wykonane',rangeLabel(d),list.length?feed:noData('Nikt jeszcze nie odhaczył żadnego zadania w tym okresie.'),true)
+    on.rank1&&chartRank(d,inner1,'count'),
+    on.rank2&&chartRank(d,inner1,'early'),
+    on.chart&&chartCard,
+    on.feed&&vcard('Ostatnio wykonane',rangeLabel(d),list.length?feed:noData('Nikt jeszcze nie odhaczył żadnego zadania w tym okresie.'),false,'feedcard')
   ].filter(Boolean);
-  var body=cards.length?h('div',{class:'vgrid'},cards):h('div',{class:'muted vnone',text:'Wybierz powyżej, które statystyki chcesz zobaczyć.'});
-  app.replaceChildren.apply(app,[head,ctl,picker,on.kpi?kpis:null,body].filter(Boolean));
+  var body2=cards.length?h('div',{class:'vgrid'},cards):h('div',{class:'muted vnone',text:'Wybierz powyżej, co chcesz zobaczyć.'});
+  app.replaceChildren(head,ctl,picker,body2);
 }
 
 /* ---------- terms & settings ---------- */

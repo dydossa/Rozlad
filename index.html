@@ -382,6 +382,33 @@ body.auth .top{display:none}
 .st-bar i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .4s}
 :root[data-theme="dark"] .st-bar i{background:linear-gradient(90deg,#ff7a1e,var(--accent),var(--accent-hot))}
 .st-last{font-size:12px;color:var(--ink-2)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;background:var(--surface-2)}
+.seg button{border:0;background:transparent;color:var(--ink-2);font:inherit;font-size:13px;padding:6px 11px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.seg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
+:root[data-theme="dark"] .seg button[aria-checked="true"]{background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--accent-hot)}
+.st-ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.rank{display:grid;gap:6px}
+.rk{display:grid;grid-template-columns:24px minmax(60px,110px) 1fr auto;gap:10px;align-items:center;padding:6px 6px;border-radius:8px}
+.rk:hover,.rk:focus-visible{background:var(--surface-2)}
+.rk.me .rk-name{color:var(--accent)}
+.rk-pos{font-family:var(--mono);font-size:12px;color:var(--ink-2);text-align:center;width:22px;height:22px;line-height:22px;border-radius:50%}
+.rk-pos.medal{color:#2a1700;font-weight:700}
+.rk-pos.t1{background:#ffcf4a} .rk-pos.t2{background:#cfd3da} .rk-pos.t3{background:#e0a070}
+.rk-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-track{height:10px;border-radius:99px;background:color-mix(in srgb,var(--ink-2) 14%,transparent);overflow:hidden}
+.rk-track i{display:block;height:100%;border-radius:4px;background:var(--accent);transition:width .35s}
+:root[data-theme="dark"] .rk-track i{background:linear-gradient(90deg,#ff7a1e,var(--accent),var(--accent-hot))}
+.rk-val{font-family:var(--mono);font-size:12px;color:var(--ink);white-space:nowrap;min-width:52px;text-align:right}
+.st-note{margin-top:6px;font-size:12px}
+.cols{display:flex;align-items:flex-end;gap:4px;height:140px;padding-top:4px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;min-width:0;border-radius:6px;padding:2px 0}
+.col:hover,.col:focus-visible{background:var(--surface-2)}
+.cv{font-family:var(--mono);font-size:11px;color:var(--ink-2);height:14px}
+.cbar{flex:1;width:70%;max-width:28px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+.cbar i{display:block;width:100%;background:color-mix(in srgb,var(--accent) 55%,var(--surface));border-radius:4px 4px 0 0;transition:height .35s}
+.col.cur .cbar i{background:var(--accent)}
+.cl{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.col.cur .cl{color:var(--ink);font-weight:700}
 .st-feed{display:grid;gap:2px}
 .st-row{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:8px 0 8px 10px;border-left:2px solid var(--k-bd);font-size:13.5px}
 .st-row+.st-row{margin-top:4px}
@@ -1175,38 +1202,93 @@ function openStats(){
 }
 var DOW=['nd','pn','wt','śr','cz','pt','sb'];
 function when(ms){ var d=new Date(ms); return DOW[d.getDay()]+' '+pad(d.getDate())+'.'+pad(d.getMonth()+1)+', '+pad(d.getHours())+':'+pad(d.getMinutes()) }
+var statsRange='all', statsMode='count';
+try{ statsRange=localStorage.getItem('rz.stRange')||'all'; statsMode=localStorage.getItem('rz.stMode')||'count' }catch(e){}
+function dur(ms){
+  var m=Math.max(1,Math.round(ms/60000));
+  if(m<60) return m+' min';
+  var hh=Math.floor(m/60), mm=m%60;
+  if(hh<48) return hh+' h'+(mm?' '+mm+' min':'');
+  var d=Math.floor(hh/24), r=hh%24; return d+' dni'+(r?' '+r+' h':'');
+}
+function median(a){ a=a.slice().sort(function(x,y){return x-y}); var n=a.length; return n?(n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2):0 }
+function segCtl(opts,val,onPick,label){
+  var box=h('div',{class:'seg',role:'radiogroup','aria-label':label});
+  opts.forEach(function(o){
+    var b=h('button',{type:'button',role:'radio','aria-checked':String(o[0]===val)},o[1]);
+    b.addEventListener('click',function(){onPick(o[0])});
+    box.append(b);
+  });
+  return box;
+}
 function renderStats(){
   if(!statsBox) return;
-  var hwById={}; S.homework.forEach(function(x){ if(x.termId===S.termId) hwById[x.id]=x });
+  var t=curTerm(), wc=(t&&t.weekCount)||10, cur=S.week;
+  var from=statsRange==='1'?cur:statsRange==='5'?Math.max(1,cur-4):1, to=statsRange==='all'?wc:cur;
+  var hwById={}; S.homework.forEach(function(x){ if(x.termId===S.termId&&x.week>=from&&x.week<=to) hwById[x.id]=x });
   var total=Object.keys(hwById).length;
   var list=S.completions.filter(function(c){return hwById[c.homeworkId]}).sort(function(a,b){return b.doneAt-a.doneAt});
-  /* one row per person, everyone added to the schedule, even with zero */
   var people={};
-  S.members.forEach(function(m){ people[m.email]={email:m.email,name:personName(m.email),n:0,last:0} });
+  S.members.forEach(function(m){ people[m.email]={email:m.email,name:personName(m.email),n:0,times:[],last:0} });
   list.forEach(function(c){
-    var p=people[c.userEmail]||(people[c.userEmail]={email:c.userEmail,name:personName(c.userEmail,c.userId),n:0,last:0});
+    var p=people[c.userEmail]||(people[c.userEmail]={email:c.userEmail,name:personName(c.userEmail,c.userId),n:0,times:[],last:0});
+    var x=hwById[c.homeworkId];
     p.n++; if(c.doneAt>p.last) p.last=c.doneAt;
+    if(x.createdAt&&c.doneAt>=x.createdAt) p.times.push(c.doneAt-x.createdAt);
   });
-  var rows=Object.keys(people).map(function(k){return people[k]}).sort(function(a,b){return b.n-a.n||b.last-a.last||a.name.localeCompare(b.name)});
-  var ppl=h('div',{class:'st-people'},rows.map(function(p){
-    var pct=total?Math.round(p.n/total*100):0;
-    return h('div',{class:'st-p'+(p.name==='Ty'?' me':'')},
-      h('div',{class:'st-top'},h('b',{text:p.name}),h('span',{class:'st-n',text:p.n+' z '+total})),
-      h('div',{class:'st-bar'},h('i',{style:'width:'+pct+'%'})),
-      h('div',{class:'st-last',text:p.last?'ostatnio: '+when(p.last):'jeszcze nic'}));
-  }));
+  var all=Object.keys(people).map(function(k){var p=people[k]; p.med=median(p.times); return p});
+  var rows, maxV;
+  if(statsMode==='count'){
+    rows=all.sort(function(a,b){return b.n-a.n||b.last-a.last||a.name.localeCompare(b.name)});
+    maxV=Math.max(1,total);
+  } else {
+    rows=all.filter(function(p){return p.times.length}).sort(function(a,b){return a.med-b.med});
+    maxV=rows.reduce(function(m,p){return Math.max(m,p.med)},1);
+  }
+  var rangeTxt=statsRange==='1'?'zjazd '+cur:from===to?'zjazd '+from:'zjazdy '+from+'–'+to;
+  var chart=h('div',{class:'rank',role:'list','aria-label':(statsMode==='count'?'Najwięcej wykonanych zadań':'Najszybsze wykonanie')+', '+rangeTxt});
+  if(!rows.length) chart.append(h('div',{class:'muted',text:statsMode==='count'?'Brak danych.':'Nikt jeszcze nic nie wykonał w tym okresie.'}));
+  rows.forEach(function(p,i){
+    var v=statsMode==='count'?p.n:p.med, pct=statsMode==='count'?(v/maxV*100):(v/maxV*100);
+    var val=statsMode==='count'?p.n+' z '+total:dur(p.med);
+    var tip=statsMode==='count'?p.name+': '+p.n+' z '+total+' zadań'+(p.last?' · ostatnio '+when(p.last):''):p.name+': mediana '+dur(p.med)+' od dodania do wykonania ('+p.times.length+' zad.)';
+    chart.append(h('div',{class:'rk'+(p.name==='Ty'?' me':''),role:'listitem',title:tip,tabindex:'0'},
+      h('span',{class:'rk-pos'+(i<3&&(statsMode==='speed'||p.n)?' medal t'+(i+1):''),text:String(i+1)}),
+      h('span',{class:'rk-name',text:p.name}),
+      h('span',{class:'rk-track'},h('i',{style:'width:'+Math.max(v?2:0,pct)+'%'})),
+      h('span',{class:'rk-val',text:val})));
+  });
+  /* per-zjazd columns for the chosen range */
+  var cols=null;
+  if(to>from){
+    var per=[], mx=1;
+    for(var w=from;w<=to;w++){ var n=list.filter(function(c){return hwById[c.homeworkId].week===w}).length; per.push([w,n]); mx=Math.max(mx,n) }
+    cols=h('div',{class:'cols',role:'list','aria-label':'Wykonane zadania w każdym zjeździe'},per.map(function(x){
+      return h('div',{class:'col'+(x[0]===cur?' cur':''),role:'listitem',title:'Zjazd '+x[0]+': '+x[1]+' wykonanych',tabindex:'0'},
+        h('span',{class:'cv',text:x[1]?String(x[1]):''}),
+        h('span',{class:'cbar'},h('i',{style:'height:'+(x[1]/mx*100)+'%'})),
+        h('span',{class:'cl',text:String(x[0])}));
+    }));
+  }
   var feed=h('div',{class:'st-feed'});
   list.slice(0,statsMore).forEach(function(c){
     var x=hwById[c.homeworkId], sb=subj(x.subjectId), k=x.kind||defaultKind(x.week,x.subjectId);
     feed.append(h('div',{class:'st-row k-'+(KCLS[k]||'inne')},
       h('div',{class:'st-when',text:when(c.doneAt)}),
       h('div',{class:'st-what'},h('div',null,h('b',{text:personName(c.userEmail,c.userId)}),' · '+x.text),
-        h('small',{text:(sb?sb.name:'?')+' · '+k+' · zjazd '+x.week}))));
+        h('small',{text:(sb?sb.name:'?')+' · '+k+' · zjazd '+x.week+(x.createdAt&&c.doneAt>=x.createdAt?' · w '+dur(c.doneAt-x.createdAt):'')}))));
   });
   if(list.length>statsMore) feed.append(h('button',{class:'btn',type:'button',onclick:function(){statsMore+=30; renderStats()}},'Pokaż więcej'));
-  statsBox.replaceChildren(
-    h('div',{class:'sec'},h('h3',{text:'Kto ile zrobił w tym rozkładzie'}),ppl),
-    h('div',{class:'sec'},h('h3',{text:'Ostatnio wykonane'}),list.length?feed:h('div',{class:'muted',text:'Nikt jeszcze nie odhaczył żadnego zadania.'})));
+  function setR(v){statsRange=v; try{localStorage.setItem('rz.stRange',v)}catch(e){} renderStats()}
+  function setM(v){statsMode=v; try{localStorage.setItem('rz.stMode',v)}catch(e){} renderStats()}
+  statsBox.replaceChildren.apply(statsBox,[
+    h('div',{class:'st-ctl'},
+      segCtl([['1','Zjazd '+cur],['5','5 zjazdów'],['all','Wszystkie '+wc]],statsRange,setR,'Okres'),
+      segCtl([['count','Najwięcej'],['speed','Najszybciej']],statsMode,setM,'Ranking')),
+    h('div',{class:'sec'},h('h3',{text:(statsMode==='count'?'Najwięcej wykonanych zadań':'Najszybciej od dodania do wykonania')+' · '+rangeTxt}),chart,
+      statsMode==='speed'?h('div',{class:'muted st-note',text:'Liczy się mediana czasu od dodania zadania do odhaczenia.'}):null),
+    cols?h('div',{class:'sec'},h('h3',{text:'Wykonane w każdym zjeździe'}),cols):null,
+    h('div',{class:'sec'},h('h3',{text:'Ostatnio wykonane'}),list.length?feed:h('div',{class:'muted',text:'Nikt jeszcze nie odhaczył żadnego zadania w tym okresie.'}))].filter(Boolean));
 }
 
 /* ---------- terms & settings ---------- */

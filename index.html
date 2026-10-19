@@ -1184,6 +1184,12 @@ function renderSubjects(){
   if(!listBox) return;
   var wk=$('#sl-wk',subjectsSheet.sheet); if(wk) wk.textContent='zjazd '+S.week;
   var seen={}, ids=[]; weekSlots(S.week).forEach(function(z){ var k=z.subjectId+'\u0001'+z.kind; if(!seen[k]){seen[k]=1; ids.push(z)} });
+  /* most important first: red !, then amber !, then by number of open tasks; otherwise keep schedule order */
+  var t=curTerm(), order=(t&&t.days)||[];
+  ids.sort(function(a,b){return order.indexOf(a.day)-order.indexOf(b.day)||a.start-b.start});
+  var rank=ids.map(function(z,i){ var oL=getNote(S.week,z.subjectId,z.kind).homework.filter(function(x){return !isDone(x)}); return {z:z,p:maxPri(oL),n:oL.length,i:i} });
+  rank.sort(function(a,b){return b.p-a.p||(b.n>0)-(a.n>0)||a.i-b.i});
+  ids=rank.map(function(r){return r.z});
   listBox.replaceChildren.apply(listBox,ids.length?ids.map(function(z){
     var id=z.subjectId, sb=subj(id); if(!sb) return null;
     var n=getNote(S.week,id,z.kind), oL=(n.homework||[]).filter(function(x){return !isDone(x)}), o=oL.length, mp=maxPri(oL), f=(n.files||[]).length;

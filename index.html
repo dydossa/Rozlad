@@ -82,8 +82,6 @@
 :root[data-theme="dark"] .chip{background:transparent;border-color:var(--line);color:var(--ink-2)}
 :root[data-theme="dark"] .chip:hover{border-color:#4a433c;color:var(--ink)}
 :root[data-theme="dark"] .chip[aria-selected="true"]{background:linear-gradient(180deg,var(--accent-hot),var(--accent) 55%,#f08a3a);color:var(--accent-ink);border-color:transparent;box-shadow:0 0 0 1px rgba(255,190,120,.35),0 4px 18px rgba(255,150,60,.28)}
-:root[data-theme="dark"] .chip.has::after{background:var(--accent)}
-:root[data-theme="dark"] .chip[aria-selected="true"].has::after{background:var(--accent-ink)}
 /* lessons: iron plates with a thin temper-coloured edge and a faint warmth of the same hue */
 :root[data-theme="dark"] .blk{background:var(--k-bg);background:linear-gradient(160deg,color-mix(in srgb,var(--k-bd) 14%,var(--surface)),color-mix(in srgb,var(--k-bd) 4%,var(--surface)) 80%);border:1px solid color-mix(in srgb,var(--k-bd) 22%,var(--line));border-left:3px solid var(--k-bd);transition:border-color .15s,box-shadow .2s}
 :root[data-theme="dark"] .blk:hover{border-color:color-mix(in srgb,var(--k-bd) 45%,var(--line));border-left-color:var(--k-bd);box-shadow:0 0 0 1px color-mix(in srgb,var(--k-bd) 25%,transparent),0 10px 30px color-mix(in srgb,var(--k-bd) 14%,transparent);filter:none}
@@ -147,8 +145,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .wk-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-right:2px;flex:none}
 .chip{position:relative;flex:none;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:15px;font-weight:500;min-width:44px;height:38px;text-align:center}
 .chip[aria-selected="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-.chip.has::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
-.chip[aria-selected="true"].has::after{background:var(--surface)}
 .daytabs{display:none;gap:0;border-top:1px solid var(--line);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
 .daytab{flex:1;border:0;background:transparent;padding:11px 8px 10px;font-weight:600;font-size:15px;cursor:pointer;color:var(--ink-2);border-bottom:3px solid transparent;display:flex;justify-content:center;gap:8px;align-items:center}
 .daytab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
@@ -712,7 +708,7 @@ function renderHeader(){
     wk.append(h('span',{class:'wk-label',text:'Zjazd'}));
     for(var i=1;i<=(t.weekCount||10);i++){
       (function(i){
-        wk.append(h('button',{class:'chip'+(openHw(i)?' has':''),type:'button',role:'tab','aria-selected':String(S.week===i),text:String(i),
+        wk.append(h('button',{class:'chip',type:'button',role:'tab','aria-selected':String(S.week===i),text:String(i),
           onclick:function(){S.week=i; try{localStorage.setItem('rz.week',String(i))}catch(e){} scheduleRender()}}));
       })(i);
     }

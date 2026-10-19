@@ -369,7 +369,6 @@ body.auth .top{display:none}
 .subjrow .n{flex:1;min-width:0;font-weight:500;overflow-wrap:anywhere}
 .subjrow .s{font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap}
 .subjrow[class*="k-"]{border-left:3px solid var(--k-bd)}
-.st-people{display:grid;gap:8px}
 .st-p{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface-2)}
 .st-p.me{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .st-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -378,11 +377,61 @@ body.auth .top{display:none}
 .st-bar i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .4s}
 :root[data-theme="dark"] .st-bar i{background:linear-gradient(90deg,#ff7a1e,var(--accent),var(--accent-hot))}
 .st-last{font-size:12px;color:var(--ink-2)}
+/* statistics page */
+:root{--p1:#2a78d6;--p2:#eb6834;--p3:#1baf7a;--p4:#eda100;--p5:#e87ba4;--p6:#6250d6;--p7:#8b8680}
+:root[data-theme="dark"]{--p1:#3987e5;--p2:#d95926;--p3:#199e70;--p4:#c98500;--p5:#d55181;--p6:#9085e9;--p7:#8b8680}
+body.v-stats #weeks,body.v-stats #dayTabs,body.v-stats #btnEdit,body.v-stats #btnSubjects{display:none}
+body.v-stats #btnStats{background:var(--ink);color:var(--surface)}
+:root[data-theme="dark"] body.v-stats #btnStats{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.st-head{display:flex;align-items:center;gap:12px;margin:6px 0 14px;flex-wrap:wrap}
+.st-head h1{margin:0;font-size:22px;line-height:1.2}
+.st-head .back svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;display:grid;gap:2px;min-width:0}
+.kpi b{font-size:24px;line-height:1.15;font-weight:650;letter-spacing:-.01em}
+.kpi span{font-size:13px;color:var(--ink)}
+.kpi small{font-size:12px;color:var(--ink-2)}
+:root[data-theme="dark"] .kpi b{color:var(--accent-hot)}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.vcard{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 16px;min-width:0;overflow:hidden}
+.vcard.wide{grid-column:1/-1}
+.vh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
+.vh h3{margin:0;font-size:15px;font-weight:650}
+.vsub{font-size:12px;color:var(--ink-2);white-space:nowrap}
+.vcard svg{display:block;max-width:100%;height:auto;overflow:visible}
+.vcard .gl{stroke:var(--line);stroke-width:1}
+.vcard .ax{font-size:11px;fill:var(--ink-2);font-family:var(--mono)}
+.vcard .ax.strong{fill:var(--ink);font-weight:600}
+.vcard .ax.lbl1{fill:var(--ink);font-family:var(--font);font-size:12.5px}
+.vcard .dl{font-size:11.5px;fill:var(--ink);font-family:var(--font);font-weight:600}
+.vcard .cross{stroke:var(--ink-2);stroke-width:1;stroke-dasharray:3 3}
+.vcard .bar{fill:var(--accent)}
+.vcard .bar2{fill:var(--ink-2);opacity:.6}
+.vcard .trk{fill:color-mix(in srgb,var(--ink-2) 16%,transparent)}
+.vcard rect[tabindex]:hover,.vcard rect[tabindex]:focus-visible{filter:brightness(1.18);outline:none}
+.vcard .hc{fill:var(--surface-2)} .vcard .hc.z{fill:color-mix(in srgb,var(--ink-2) 9%,var(--surface))}
+.vlegend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--ink-2);margin:0 0 8px}
+.vlegend span{display:inline-flex;align-items:center;gap:6px}
+.vlegend i{width:12px;height:3px;border-radius:2px;display:inline-block}
+.vnone{padding:14px 0}
+.viztip{position:fixed;z-index:80;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12.5px;box-shadow:0 8px 28px rgba(0,0,0,.35);opacity:0;transition:opacity .08s;max-width:260px}
+.viztip.on{opacity:1}
+.tt-h{font-weight:600;margin-bottom:4px;color:var(--ink-2);font-size:12px}
+.tt-r{display:flex;align-items:center;gap:8px;line-height:1.5}
+.tt-r i{width:10px;height:3px;border-radius:2px;flex:none}.tt-r i.nokey{background:transparent}
+.tt-r b{font-family:var(--mono);font-weight:600}
+.tt-r span{color:var(--ink-2)}
+@media (max-width:759px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .vgrid{grid-template-columns:1fr}
+  .vcard{padding:12px}
+}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;background:var(--surface-2)}
 .seg button{border:0;background:transparent;color:var(--ink-2);font:inherit;font-size:13px;padding:6px 11px;border-radius:7px;cursor:pointer;white-space:nowrap}
 .seg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
 :root[data-theme="dark"] .seg button[aria-checked="true"]{background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--accent-hot)}
 .st-ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.rank{margin-top:10px}
 .rank{display:grid;gap:6px}
 .rk{display:grid;grid-template-columns:24px minmax(60px,110px) 1fr auto;gap:10px;align-items:center;padding:6px 6px;border-radius:8px}
 .rk:hover,.rk:focus-visible{background:var(--surface-2)}
@@ -436,6 +485,9 @@ body.auth .top{display:none}
       <button class="btn" id="btnSubjects" type="button" aria-label="Przedmioty i zadania tego zjazdu">
         <svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg>
         <span class="lbl">Zadania</span><span class="badge" id="hwBadge" hidden></span>
+      </button>
+      <button class="btn" id="btnStats" type="button" aria-pressed="false" aria-label="Statystyka" title="Statystyka">
+        <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Statystyka</span>
       </button>
       <button class="btn" id="btnEdit" type="button" aria-pressed="false">
         <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span class="lbl">Edytuj</span>
@@ -497,7 +549,7 @@ function fmt(m){return pad(Math.floor(m/60))+':'+pad(m%60)}
 function parseT(s){var m=/^(\d{1,2}):(\d{2})/.exec(s||''); return m?(+m[1])*60+(+m[2]):null}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function icon(name){
-  var P={x:'<path d="M6 6l12 12M18 6L6 18"/>',plus:'<path d="M12 5v14M5 12h14"/>'};
+  var P={x:'<path d="M6 6l12 12M18 6L6 18"/>',plus:'<path d="M12 5v14M5 12h14"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
   var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.innerHTML=P[name]; return s;
 }
 var toastT;
@@ -656,7 +708,7 @@ function makeSheet(z){
   scrim.addEventListener('click',api.close);
   return api;
 }
-var subjectsSheet=makeSheet(30), subjectSheet=makeSheet(32), editorSheet=makeSheet(34), settingsSheet=makeSheet(36), statsSheet=makeSheet(36), accountSheet=makeSheet(38);
+var subjectsSheet=makeSheet(30), subjectSheet=makeSheet(32), editorSheet=makeSheet(34), settingsSheet=makeSheet(36), accountSheet=makeSheet(38);
 document.addEventListener('keydown',function(e){
   if(e.key!=='Escape') return;
   [accountSheet,settingsSheet,editorSheet,subjectSheet,subjectsSheet].some(function(s){ if(s.isOpen()){s.close(); return true} });
@@ -696,7 +748,6 @@ function render(){
   });
   if(subjectSheet.isOpen()&&open.id) renderSubject();
   if(subjectsSheet.isOpen()) renderSubjects();
-  if(statsSheet.isOpen()) renderStats();
 }
 function daysOf(t){return t.days&&t.days.length?t.days:['Субота','Неділя']}
 function renderHeader(){
@@ -723,6 +774,8 @@ function renderHeader(){
     });
   }
   var b=$('#hwBadge'), n=t?openHw(S.week):0; b.hidden=!n; b.textContent=n;
+  document.body.classList.toggle('v-stats',S.view==='stats');
+  var sb2=$('#btnStats'); sb2.setAttribute('aria-pressed',String(S.view==='stats')); sb2.title=S.view==='stats'?'Wróć do rozkładu':'Statystyka';
   var eb=$('#btnEdit'); eb.setAttribute('aria-pressed',String(S.edit)); $('.lbl',eb).textContent=S.edit?'Gotowe':'Edytuj';
   eb.hidden=!isOwner();
 }
@@ -747,6 +800,7 @@ function renderApp(){
       isPhone()||!isOwner()?null:h('button',{class:'btn primary',type:'button',onclick:function(){createTerm('Nowy rozkład',null)}},'Utwórz rozkład')));
     return;
   }
+  if(S.view==='stats'){ renderStats(app,t); return }
   if(isPhone()){ S.edit=false; renderPhone(app,t); } else renderDesktop(app,t);
 }
 
@@ -1195,17 +1249,23 @@ function renderSubjects(){
   }).filter(Boolean):[h('div',{class:'muted',text:'W tym zjeździe nie ma jeszcze zajęć. Kliknij „Edytuj” i dodaj je.'})]);
 }
 
-/* ---------- statistics: who finished which task, and when ---------- */
-var statsBox, statsMore=20;
+/* ---------- statistics page: who finished which task, and when ---------- */
+var statsRange='all', statsMode='count', statsMore=20;
+try{ statsRange=localStorage.getItem('rz.stRange')||'all'; statsMode=localStorage.getItem('rz.stMode')||'count' }catch(e){}
 function openStats(){
-  statsBox=h('div',{class:'stats'}); statsMore=20;
-  statsSheet.sheet.replaceChildren(sheetHead('Statystyka',statsSheet),statsBox);
-  renderStats(); statsSheet.open();
+  if(S.view==='stats') return;
+  S.view='stats'; statsMore=20;
+  try{ history.pushState({rz:'stats'},'') }catch(e){}
+  try{ window.scrollTo(0,0) }catch(e){}
+  scheduleRender();
+}
+function closeStats(){
+  if(S.view!=='stats') return;
+  if(history.state&&history.state.rz==='stats'){ try{ history.back(); return }catch(e){} }
+  S.view=null; scheduleRender();
 }
 var DOW=['nd','pn','wt','śr','cz','pt','sb'];
 function when(ms){ var d=new Date(ms); return DOW[d.getDay()]+' '+pad(d.getDate())+'.'+pad(d.getMonth()+1)+', '+pad(d.getHours())+':'+pad(d.getMinutes()) }
-var statsRange='all', statsMode='count';
-try{ statsRange=localStorage.getItem('rz.stRange')||'all'; statsMode=localStorage.getItem('rz.stMode')||'count' }catch(e){}
 function dur(ms){
   var m=Math.max(1,Math.round(ms/60000));
   if(m<60) return m+' min';
@@ -1214,6 +1274,65 @@ function dur(ms){
   var d=Math.floor(hh/24), r=hh%24; return d+' dni'+(r?' '+r+' h':'');
 }
 function median(a){ a=a.slice().sort(function(x,y){return x-y}); var n=a.length; return n?(n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2):0 }
+
+/* --- tiny SVG + tooltip helpers --- */
+var NS='http://www.w3.org/2000/svg';
+function sv(tag,attrs){
+  var e=document.createElementNS(NS,tag); attrs=attrs||{};
+  Object.keys(attrs).forEach(function(k){ var v=attrs[k]; if(v==null) return; if(k==='text') e.textContent=v; else e.setAttribute(k,v) });
+  for(var i=2;i<arguments.length;i++){ var c=arguments[i]; if(c) e.append(c) }
+  return e;
+}
+var tipEl=null;
+function tip(){ if(!tipEl){ tipEl=h('div',{class:'viztip',role:'status'}); document.body.append(tipEl) } return tipEl }
+function showTip(ev,rows,title){
+  var t=tip(); t.replaceChildren();
+  if(title) t.append(h('div',{class:'tt-h',text:title}));
+  rows.forEach(function(r){
+    t.append(h('div',{class:'tt-r'},r.color?h('i',{style:'background:'+r.color}):h('i',{class:'nokey'}),h('b',{text:r.v}),h('span',{text:r.l})));
+  });
+  t.classList.add('on');
+  var x=ev.clientX, y=ev.clientY, w=t.offsetWidth, hh=t.offsetHeight;
+  var left=x+14; if(left+w>window.innerWidth-8) left=x-w-14; if(left<8) left=8;
+  var top=y-hh-12; if(top<8) top=y+16;
+  t.style.left=left+'px'; t.style.top=top+'px';
+}
+function hideTip(){ if(tipEl) tipEl.classList.remove('on') }
+document.addEventListener('pointerdown',function(e){ if(!e.target.closest||!e.target.closest('.vz')) hideTip() });
+document.addEventListener('scroll',hideTip,true);
+function hoverMark(el,fn){
+  el.addEventListener('pointermove',function(e){ fn(e) });
+  el.addEventListener('pointerdown',function(e){ fn(e) });
+  el.addEventListener('pointerleave',hideTip);
+  el.addEventListener('focus',function(){ var r=el.getBoundingClientRect(); fn({clientX:r.left+r.width/2,clientY:r.top}) });
+  el.addEventListener('blur',hideTip);
+}
+
+/* a person keeps the same colour everywhere (by order in the member list) */
+function personIdx(email){
+  var i=S.members.findIndex(function(m){return m.email===email});
+  return i<0||i>5?6:i;
+}
+function pcol(i){ return 'var(--p'+(i+1)+')' }
+
+function statsData(){
+  var t=curTerm(), wc=(t&&t.weekCount)||10, cur=S.week;
+  var from=statsRange==='1'?cur:statsRange==='5'?Math.max(1,cur-4):1, to=statsRange==='all'?wc:cur;
+  var hw={}; S.homework.forEach(function(x){ if(x.termId===S.termId&&x.week>=from&&x.week<=to) hw[x.id]=x });
+  var comps=S.completions.filter(function(c){return hw[c.homeworkId]}).sort(function(a,b){return a.doneAt-b.doneAt});
+  var total=Object.keys(hw).length;
+  var people={}, order=[];
+  var members=S.members.slice().sort(function(a,b){return String(a.addedAt||'').localeCompare(String(b.addedAt||''))||a.email.localeCompare(b.email)});
+  members.forEach(function(m){ people[m.email]={email:m.email,name:personName(m.email),idx:personIdx(m.email),n:0,times:[],last:0,pri:[0,0,0]}; order.push(m.email) });
+  comps.forEach(function(c){
+    var p=people[c.userEmail]; if(!p){ p=people[c.userEmail]={email:c.userEmail,name:personName(c.userEmail,c.userId),idx:6,n:0,times:[],last:0,pri:[0,0,0]}; order.push(c.userEmail) }
+    var x=hw[c.homeworkId]; p.n++; if(c.doneAt>p.last) p.last=c.doneAt; p.pri[x.priority||0]++;
+    if(x.createdAt&&c.doneAt>=x.createdAt) p.times.push(c.doneAt-x.createdAt);
+  });
+  var list=order.map(function(e){ var p=people[e]; p.med=median(p.times); return p });
+  return {cur:cur,from:from,to:to,wc:wc,hw:hw,comps:comps,total:total,people:list,byEmail:people,me:S.user&&people[S.user.email]};
+}
+function rangeLabel(d){ return statsRange==='1'?'zjazd '+d.cur:d.from===d.to?'zjazd '+d.from:'zjazdy '+d.from+'–'+d.to }
 function segCtl(opts,val,onPick,label){
   var box=h('div',{class:'seg',role:'radiogroup','aria-label':label});
   opts.forEach(function(o){
@@ -1223,75 +1342,249 @@ function segCtl(opts,val,onPick,label){
   });
   return box;
 }
-function renderStats(){
-  if(!statsBox) return;
-  var t=curTerm(), wc=(t&&t.weekCount)||10, cur=S.week;
-  var from=statsRange==='1'?cur:statsRange==='5'?Math.max(1,cur-4):1, to=statsRange==='all'?wc:cur;
-  var hwById={}; S.homework.forEach(function(x){ if(x.termId===S.termId&&x.week>=from&&x.week<=to) hwById[x.id]=x });
-  var total=Object.keys(hwById).length;
-  var list=S.completions.filter(function(c){return hwById[c.homeworkId]}).sort(function(a,b){return b.doneAt-a.doneAt});
-  var people={};
-  S.members.forEach(function(m){ people[m.email]={email:m.email,name:personName(m.email),n:0,times:[],last:0} });
-  list.forEach(function(c){
-    var p=people[c.userEmail]||(people[c.userEmail]={email:c.userEmail,name:personName(c.userEmail,c.userId),n:0,times:[],last:0});
-    var x=hwById[c.homeworkId];
-    p.n++; if(c.doneAt>p.last) p.last=c.doneAt;
-    if(x.createdAt&&c.doneAt>=x.createdAt) p.times.push(c.doneAt-x.createdAt);
-  });
-  var all=Object.keys(people).map(function(k){var p=people[k]; p.med=median(p.times); return p});
-  var rows, maxV;
+function legendFor(people){
+  var used=people.filter(function(p){return p.n>0});
+  return h('div',{class:'vlegend'},used.map(function(p){ return h('span',null,h('i',{style:'background:'+pcol(p.idx)}),p.name) }));
+}
+function vcard(title,sub,body,wide,id){
+  return h('section',{class:'vcard vz'+(wide?' wide':''),id:id||null},
+    h('div',{class:'vh'},h('h3',{text:title}),sub?h('span',{class:'vsub',text:sub}):null),body);
+}
+function noData(txt){ return h('div',{class:'muted vnone',text:txt||'Za mało danych w tym okresie.'}) }
+
+/* 1. ranking */
+function chartRank(d,inner){
+  var rows=d.people.slice();
+  var box=h('div',{class:'rank',role:'list'});
+  var ctl=segCtl([['count','Najwięcej'],['speed','Najszybciej']],statsMode,function(v){statsMode=v; try{localStorage.setItem('rz.stMode',v)}catch(e){} scheduleRender()},'Ranking');
   if(statsMode==='count'){
-    rows=all.sort(function(a,b){return b.n-a.n||b.last-a.last||a.name.localeCompare(b.name)});
-    maxV=Math.max(1,total);
+    rows.sort(function(a,b){return b.n-a.n||b.last-a.last||a.name.localeCompare(b.name)});
   } else {
-    rows=all.filter(function(p){return p.times.length}).sort(function(a,b){return a.med-b.med});
-    maxV=rows.reduce(function(m,p){return Math.max(m,p.med)},1);
+    rows=rows.filter(function(p){return p.times.length}).sort(function(a,b){return a.med-b.med});
   }
-  var rangeTxt=statsRange==='1'?'zjazd '+cur:from===to?'zjazd '+from:'zjazdy '+from+'–'+to;
-  var chart=h('div',{class:'rank',role:'list','aria-label':(statsMode==='count'?'Najwięcej wykonanych zadań':'Najszybsze wykonanie')+', '+rangeTxt});
-  if(!rows.length) chart.append(h('div',{class:'muted',text:statsMode==='count'?'Brak danych.':'Nikt jeszcze nic nie wykonał w tym okresie.'}));
+  var maxV=statsMode==='count'?Math.max(1,d.total):rows.reduce(function(m,p){return Math.max(m,p.med)},1);
+  if(!rows.length) box.append(noData(statsMode==='count'?'Brak danych.':'Nikt jeszcze nic nie wykonał w tym okresie.'));
   rows.forEach(function(p,i){
-    var v=statsMode==='count'?p.n:p.med, pct=statsMode==='count'?(v/maxV*100):(v/maxV*100);
-    var val=statsMode==='count'?p.n+' z '+total:dur(p.med);
-    var tip=statsMode==='count'?p.name+': '+p.n+' z '+total+' zadań'+(p.last?' · ostatnio '+when(p.last):''):p.name+': mediana '+dur(p.med)+' od dodania do wykonania ('+p.times.length+' zad.)';
-    chart.append(h('div',{class:'rk'+(p.name==='Ty'?' me':''),role:'listitem',title:tip,tabindex:'0'},
+    var v=statsMode==='count'?p.n:p.med, pct=v/maxV*100;
+    var val=statsMode==='count'?p.n+' z '+d.total:dur(p.med);
+    var r=h('div',{class:'rk'+(p.name==='Ty'?' me':''),role:'listitem',tabindex:'0'},
       h('span',{class:'rk-pos'+(i<3&&(statsMode==='speed'||p.n)?' medal t'+(i+1):''),text:String(i+1)}),
       h('span',{class:'rk-name',text:p.name}),
       h('span',{class:'rk-track'},h('i',{style:'width:'+Math.max(v?2:0,pct)+'%'})),
-      h('span',{class:'rk-val',text:val})));
+      h('span',{class:'rk-val',text:val}));
+    hoverMark(r,function(e){
+      showTip(e,statsMode==='count'
+        ?[{v:p.n+' z '+d.total,l:'wykonanych zadań'}].concat(p.last?[{v:when(p.last),l:'ostatnio'}]:[])
+        :[{v:dur(p.med),l:'mediana'},{v:String(p.times.length),l:'zadań w próbce'}],p.name)});
+    box.append(r);
   });
-  /* per-zjazd columns for the chosen range */
-  var cols=null;
-  if(to>from){
-    var per=[], mx=1;
-    for(var w=from;w<=to;w++){ var n=list.filter(function(c){return hwById[c.homeworkId].week===w}).length; per.push([w,n]); mx=Math.max(mx,n) }
-    cols=h('div',{class:'cols',role:'list','aria-label':'Wykonane zadania w każdym zjeździe'},per.map(function(x){
-      return h('div',{class:'col'+(x[0]===cur?' cur':''),role:'listitem',title:'Zjazd '+x[0]+': '+x[1]+' wykonanych',tabindex:'0'},
-        h('span',{class:'cv',text:x[1]?String(x[1]):''}),
-        h('span',{class:'cbar'},h('i',{style:'height:'+(x[1]/mx*100)+'%'})),
-        h('span',{class:'cl',text:String(x[0])}));
-    }));
+  var wrap=h('div',null,ctl,box,statsMode==='speed'?h('div',{class:'muted st-note',text:'Mediana czasu od dodania zadania do odhaczenia.'}):null);
+  return vcard(statsMode==='count'?'Kto zrobił najwięcej':'Kto robi najszybciej',rangeLabel(d),wrap);
+}
+
+/* 2. cumulative line over calendar days */
+function chartLine(d,inner){
+  var comps=d.comps;
+  if(comps.length<2) return vcard('Narastająco w czasie',rangeLabel(d),noData(),true);
+  var DAY=86400000;
+  function day0(ms){ var x=new Date(ms); x.setHours(0,0,0,0); return x.getTime() }
+  var t0=day0(comps[0].doneAt), t1=day0(comps[comps.length-1].doneAt), nd=Math.round((t1-t0)/DAY)+1;
+  if(nd<2){ nd=2; t1=t0+DAY }
+  var act=d.people.filter(function(p){return p.n>0});
+  var series=act.map(function(p){ var arr=new Array(nd).fill(0); comps.forEach(function(c){ if(c.userEmail===p.email){ var k=Math.round((day0(c.doneAt)-t0)/DAY); arr[k]++ } }); for(var k=1;k<nd;k++) arr[k]+=arr[k-1]; return {p:p,v:arr} });
+  var maxY=1; series.forEach(function(s){ maxY=Math.max(maxY,s.v[nd-1]) });
+  var step=maxY<=5?1:maxY<=10?2:maxY<=25?5:maxY<=50?10:20, top=Math.ceil(maxY/step)*step;
+  var W=inner, H=230, L=30, R=64, T=10, B=24, pw=W-L-R, ph=H-T-B;
+  function X(k){ return L+k/(nd-1)*pw } function Y(v){ return T+ph-v/top*ph }
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Narastająca liczba wykonanych zadań każdej osoby w czasie'});
+  for(var g=0;g<=top;g+=step){ svg.append(sv('line',{x1:L,x2:W-R,y1:Y(g),y2:Y(g),class:'gl'}),sv('text',{x:L-6,y:Y(g)+4,class:'ax',style:'text-anchor:end',text:g})) }
+  var nt=Math.min(nd,W<420?4:6);
+  for(var q=0;q<nt;q++){ var k=Math.round(q*(nd-1)/(nt-1||1)), dt=new Date(t0+k*DAY); svg.append(sv('text',{x:X(k),y:H-6,class:'ax',style:'text-anchor:'+(q===0?'start':q===nt-1?'end':'middle'),text:pad(dt.getDate())+'.'+pad(dt.getMonth()+1)})) }
+  series.forEach(function(s){
+    var pts=s.v.map(function(v,k){ return (k?'L':'M')+X(k).toFixed(1)+' '+Y(v).toFixed(1) }).join(' ');
+    svg.append(sv('path',{d:pts,fill:'none',stroke:pcol(s.p.idx),'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+  });
+  /* direct labels at the line ends, nudged apart */
+  var ends=series.map(function(s){ return {s:s,y:Y(s.v[nd-1])} }).sort(function(a,b){return a.y-b.y});
+  for(var e=1;e<ends.length;e++) if(ends[e].y-ends[e-1].y<13) ends[e].y=ends[e-1].y+13;
+  ends.forEach(function(o){
+    svg.append(sv('circle',{cx:X(nd-1),cy:Y(o.s.v[nd-1]),r:4,fill:pcol(o.s.p.idx),stroke:'var(--surface)','stroke-width':2}),
+      sv('text',{x:X(nd-1)+9,y:o.y+4,class:'dl',text:o.s.p.name+' '+o.s.v[nd-1]}));
+  });
+  var cross=sv('line',{y1:T,y2:T+ph,class:'cross',style:'display:none'}); svg.append(cross);
+  var hit=sv('rect',{x:L,y:T,width:pw,height:ph,fill:'transparent'}); svg.append(hit);
+  function at(e){
+    var r=svg.getBoundingClientRect(), px=(e.clientX-r.left)/r.width*W, k=Math.max(0,Math.min(nd-1,Math.round((px-L)/pw*(nd-1))));
+    cross.setAttribute('x1',X(k)); cross.setAttribute('x2',X(k)); cross.style.display='';
+    var dt=new Date(t0+k*DAY);
+    showTip(e,series.slice().sort(function(a,b){return b.v[k]-a.v[k]}).map(function(s){return {color:pcol(s.p.idx),v:String(s.v[k]),l:s.p.name}}),DOW[dt.getDay()]+' '+pad(dt.getDate())+'.'+pad(dt.getMonth()+1));
   }
-  var feed=h('div',{class:'st-feed'});
+  hit.addEventListener('pointermove',at); hit.addEventListener('pointerdown',at);
+  hit.addEventListener('pointerleave',function(){ cross.style.display='none'; hideTip() });
+  return vcard('Narastająco w czasie',rangeLabel(d),h('div',null,legendFor(d.people),svg),true);
+}
+
+/* 3. stacked columns per zjazd */
+function chartCols(d,inner,wide){
+  if(d.to===d.from) return null;
+  var weeks=[]; for(var w=d.from;w<=d.to;w++) weeks.push(w);
+  var act=d.people.filter(function(p){return p.n>0});
+  if(!act.length) return vcard('Wykonane w każdym zjeździe',rangeLabel(d),noData(),wide);
+  var per={}; weeks.forEach(function(w){ per[w]={}; });
+  d.comps.forEach(function(c){ var w=d.hw[c.homeworkId].week; per[w][c.userEmail]=(per[w][c.userEmail]||0)+1 });
+  var tot=weeks.map(function(w){ return act.reduce(function(n,p){return n+(per[w][p.email]||0)},0) });
+  var maxY=Math.max.apply(null,tot.concat([1])), step=maxY<=5?1:maxY<=10?2:maxY<=25?5:maxY<=50?10:20, top=Math.ceil(maxY/step)*step;
+  var W=inner, H=210, L=30, R=8, T=18, B=22, pw=W-L-R, ph=H-T-B, bw=Math.min(34,pw/weeks.length*0.62), slot=pw/weeks.length;
+  function Y(v){ return T+ph-v/top*ph }
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Wykonane zadania w każdym zjeździe, z podziałem na osoby'});
+  for(var g=0;g<=top;g+=step){ svg.append(sv('line',{x1:L,x2:W-R,y1:Y(g),y2:Y(g),class:'gl'}),sv('text',{x:L-6,y:Y(g)+4,class:'ax',style:'text-anchor:end',text:g})) }
+  weeks.forEach(function(w,i){
+    var cx=L+slot*i+slot/2, y=0;
+    act.forEach(function(p){
+      var n=per[w][p.email]||0; if(!n) return;
+      var y1=Y(y+n), y0=Y(y), r=sv('rect',{x:cx-bw/2,y:y1,width:bw,height:Math.max(1,y0-y1),fill:pcol(p.idx),stroke:'var(--surface)','stroke-width':2,rx:3,tabindex:'0','aria-label':p.name+', zjazd '+w+': '+n});
+      hoverMark(r,function(e){ showTip(e,[{color:pcol(p.idx),v:String(n),l:p.name}],'Zjazd '+w) });
+      svg.append(r); y+=n;
+    });
+    if(tot[i]) svg.append(sv('text',{x:cx,y:Y(tot[i])-5,class:'ax strong',style:'text-anchor:middle',text:tot[i]}));
+    svg.append(sv('text',{x:cx,y:H-6,class:'ax'+(w===d.cur?' strong':''),style:'text-anchor:middle',text:w}));
+  });
+  return vcard('Wykonane w każdym zjeździe',rangeLabel(d),h('div',null,legendFor(d.people),svg),wide);
+}
+
+/* 4. heat map: weekday x hour */
+function chartHeat(d,inner){
+  if(!d.comps.length) return vcard('Kiedy odhaczamy zadania',rangeLabel(d),noData(),true);
+  var grid=[]; for(var a=0;a<7;a++){ grid.push(new Array(24).fill(0)) }
+  var mx=1; d.comps.forEach(function(c){ var dt=new Date(c.doneAt), r=(dt.getDay()+6)%7, k=dt.getHours(); grid[r][k]++; mx=Math.max(mx,grid[r][k]) });
+  var names=['pn','wt','śr','cz','pt','sb','nd'];
+  var W=inner, L=26, cw=(W-L)/24, ch=Math.max(16,Math.min(24,cw*0.95)), H=7*ch+22;
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Mapa godzin i dni tygodnia, w których odhaczano zadania'});
+  for(var r=0;r<7;r++){
+    svg.append(sv('text',{x:L-6,y:r*ch+ch/2+4,class:'ax',style:'text-anchor:end',text:names[r]}));
+    for(var k=0;k<24;k++){
+      var n=grid[r][k], t=n/mx;
+      var cell=sv('rect',{x:L+k*cw+1,y:r*ch+1,width:cw-2,height:ch-2,rx:3,class:'hc'+(n?'':' z'),tabindex:n?'0':null,'aria-label':n?names[r]+' '+k+':00, '+n:null});
+      if(n) cell.style.fill='color-mix(in srgb, var(--accent) '+Math.round(18+t*82)+'%, var(--surface-2))';
+      (function(n,r,k){ hoverMark(cell,function(e){ showTip(e,[{v:String(n),l:n===1?'wykonane zadanie':'wykonanych zadań'}],names[r]+' '+pad(k)+':00–'+pad((k+1)%24)+':00') }) })(n,r,k);
+      svg.append(cell);
+    }
+  }
+  for(var q=0;q<24;q+=3) svg.append(sv('text',{x:L+q*cw+cw/2,y:H-6,class:'ax',style:'text-anchor:middle',text:pad(q)}));
+  return vcard('Kiedy odhaczamy zadania',rangeLabel(d),svg,true);
+}
+
+/* 5. histogram: how fast tasks get done */
+function chartSpeed(d,inner){
+  var B=[['< 1 h',0,3600e3],['1–6 h',3600e3,6*3600e3],['6–24 h',6*3600e3,86400e3],['1–3 dni',86400e3,3*86400e3],['> 3 dni',3*86400e3,Infinity]];
+  var cnt=B.map(function(){return {all:0,me:0}});
+  d.comps.forEach(function(c){ var x=d.hw[c.homeworkId]; if(!x.createdAt||c.doneAt<x.createdAt) return; var dt=c.doneAt-x.createdAt;
+    for(var i=0;i<B.length;i++) if(dt>=B[i][1]&&dt<B[i][2]){ cnt[i].all++; if(S.user&&c.userId===S.user.id) cnt[i].me++; break } });
+  var tot=cnt.reduce(function(n,c){return n+c.all},0);
+  if(!tot) return vcard('Jak szybko robimy zadania',rangeLabel(d),noData());
+  var mx=Math.max.apply(null,cnt.map(function(c){return c.all})), step=mx<=5?1:mx<=10?2:mx<=25?5:10, top=Math.ceil(mx/step)*step;
+  var W=inner, H=200, L=30, R=6, T=16, Bt=22, pw=W-L-R, ph=H-T-Bt, slot=pw/B.length, bw=Math.min(44,slot*0.6);
+  function Y(v){ return T+ph-v/top*ph }
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Rozkład czasu od dodania zadania do wykonania'});
+  for(var g=0;g<=top;g+=step) svg.append(sv('line',{x1:L,x2:W-R,y1:Y(g),y2:Y(g),class:'gl'}),sv('text',{x:L-6,y:Y(g)+4,class:'ax',style:'text-anchor:end',text:g}));
+  cnt.forEach(function(c,i){
+    var cx=L+slot*i+slot/2;
+    var r=sv('rect',{x:cx-bw/2,y:Y(c.all),width:bw,height:Math.max(c.all?1:0,Y(0)-Y(c.all)),rx:4,class:'bar',tabindex:'0','aria-label':B[i][0]+': '+c.all});
+    hoverMark(r,function(e){ showTip(e,[{v:String(c.all),l:'wszyscy'},{v:String(c.me),l:'Ty'}],B[i][0]) });
+    svg.append(r);
+    if(c.all) svg.append(sv('text',{x:cx,y:Y(c.all)-5,class:'ax strong',style:'text-anchor:middle',text:c.all}));
+    svg.append(sv('text',{x:cx,y:H-6,class:'ax',style:'text-anchor:middle',text:B[i][0]}));
+  });
+  return vcard('Jak szybko robimy zadania',rangeLabel(d),svg);
+}
+
+/* 6. progress by subject: me vs the group average */
+function chartSubjects(d,inner){
+  var keys={}, order=[];
+  Object.keys(d.hw).forEach(function(id){ var x=d.hw[id], k=x.kind||defaultKind(x.week,x.subjectId), key=x.subjectId+'\u0001'+k;
+    if(!keys[key]){ keys[key]={sid:x.subjectId,kind:k,ids:[],me:0,sum:0}; order.push(key) } keys[key].ids.push(id) });
+  var nm=Math.max(1,S.members.length);
+  d.comps.forEach(function(c){ var x=d.hw[c.homeworkId], key=x.subjectId+'\u0001'+(x.kind||defaultKind(x.week,x.subjectId)); var e=keys[key]; if(!e) return; e.sum++; if(S.user&&c.userId===S.user.id) e.me++ });
+  var rows=order.map(function(k){return keys[k]}).sort(function(a,b){return b.ids.length-a.ids.length}).slice(0,10);
+  if(!rows.length) return vcard('Postęp według przedmiotów',rangeLabel(d),noData('Nie ma jeszcze zadań w tym okresie.'));
+  var W=inner, rh=34, lw=Math.min(190,W*0.42), vw=40, bx=lw+8, bwid=W-bx-vw, H=rows.length*rh+4;
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Procent zadań wykonanych przez Ciebie i średnio przez wszystkich, według przedmiotu'});
+  rows.forEach(function(e,i){
+    var y=i*rh+2, n=e.ids.length, me=e.me/n, avg=e.sum/(n*nm), sb=subj(e.sid), kc=KCLS[e.kind]||'inne';
+    var label=(sb?sb.name:'?'), max=Math.floor(lw/6.2); if(label.length>max) label=label.slice(0,max-1)+'…';
+    svg.append(sv('rect',{x:0,y:y+4,width:3,height:rh-12,rx:1.5,fill:'var(--'+kc+'-bd)'}),
+      sv('text',{x:10,y:y+13,class:'ax lbl1',text:label}),sv('text',{x:10,y:y+26,class:'ax',style:'opacity:.75',text:e.kind}),
+      sv('rect',{x:bx,y:y+5,width:bwid,height:7,rx:3.5,class:'trk'}),sv('rect',{x:bx,y:y+5,width:Math.max(me?3:0,bwid*me),height:7,rx:3.5,class:'bar'}),
+      sv('rect',{x:bx,y:y+16,width:bwid,height:5,rx:2.5,class:'trk'}),sv('rect',{x:bx,y:y+16,width:Math.max(avg?3:0,bwid*avg),height:5,rx:2.5,class:'bar2'}),
+      sv('text',{x:W,y:y+14,class:'ax strong',style:'text-anchor:end',text:Math.round(me*100)+'%'}));
+    var hit=sv('rect',{x:0,y:y,width:W,height:rh,fill:'transparent',tabindex:'0','aria-label':(sb?sb.name:'')+' '+e.kind+': Ty '+Math.round(me*100)+'%, średnio '+Math.round(avg*100)+'%'});
+    hoverMark(hit,function(ev){ showTip(ev,[{color:'var(--accent)',v:e.me+' z '+n+' ('+Math.round(me*100)+'%)',l:'Ty'},{color:'var(--ink-2)',v:Math.round(avg*100)+'%',l:'średnio wszyscy'}],(sb?sb.name:'?')+' · '+e.kind) });
+    svg.append(hit);
+  });
+  var lg=h('div',{class:'vlegend'},h('span',null,h('i',{style:'background:var(--accent)'}),'Ty'),h('span',null,h('i',{style:'background:var(--ink-2);opacity:.6'}),'średnia wszystkich'));
+  return vcard('Postęp według przedmiotów',rangeLabel(d),h('div',null,lg,svg));
+}
+
+/* 7. what priority each person finished */
+function chartPriority(d,inner){
+  var act=d.people.filter(function(p){return p.n>0}).sort(function(a,b){return b.n-a.n});
+  if(!act.length) return vcard('Ważność wykonanych zadań',rangeLabel(d),noData());
+  var cols=['color-mix(in srgb,var(--ink-2) 55%,var(--surface))','var(--pri1)','var(--pri2)'], rh=30, W=inner, lw=Math.min(92,W*0.26), vw=34, bx=lw+8, bwid=W-bx-vw, H=act.length*rh+2;
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Ważność zadań wykonanych przez każdą osobę'});
+  act.forEach(function(p,i){
+    var y=i*rh+2, x=bx;
+    var nm=p.name.length>13?p.name.slice(0,12)+'…':p.name;
+    svg.append(sv('text',{x:0,y:y+16,class:'ax lbl1',text:nm}));
+    p.pri.forEach(function(n,k){
+      if(!n) return; var w=bwid*n/p.n, r=sv('rect',{x:x,y:y+4,width:Math.max(1,w-2),height:16,rx:3,fill:cols[k],tabindex:'0','aria-label':p.name+', '+PRI[k].n+': '+n});
+      hoverMark(r,function(e){ showTip(e,[{color:cols[k],v:String(n),l:PRI[k].n}],p.name) }); svg.append(r); x+=w;
+    });
+    svg.append(sv('text',{x:W,y:y+16,class:'ax strong',style:'text-anchor:end',text:p.n}));
+  });
+  var lg=h('div',{class:'vlegend'},PRI.map(function(o,k){ return h('span',null,h('i',{style:'background:'+cols[k]}),o.n) }));
+  return vcard('Ważność wykonanych zadań',rangeLabel(d),h('div',null,lg,svg));
+}
+
+function renderStats(app,t){
+  var d=statsData(), narrow=app.clientWidth<760, pageW=Math.max(280,app.clientWidth);
+  var inner1=Math.floor((narrow?pageW:(pageW-14)/2)-34), innerW=Math.floor(pageW-34);
+  var me=d.me, myTimes=me?me.times:[];
+  var hours=new Array(24).fill(0); d.comps.forEach(function(c){ hours[new Date(c.doneAt).getHours()]++ });
+  var hb=hours.indexOf(Math.max.apply(null,hours));
+  function kpi(v,l,sub){ return h('div',{class:'kpi'},h('b',{text:v}),h('span',{text:l}),sub?h('small',{text:sub}):null) }
+  var kpis=h('div',{class:'kpis'},
+    kpi(String(d.total),'zadań w okresie',rangeLabel(d)),
+    kpi(me?me.n+' z '+d.total:'—','zrobione przez Ciebie',d.total&&me?Math.round(me.n/d.total*100)+'%':''),
+    kpi(myTimes.length?dur(median(myTimes)):'—','Twój typowy czas','od dodania do odhaczenia'),
+    kpi(d.comps.length?pad(hb)+':00':'—','najczęstsza godzina','wszyscy razem'));
+  function setR(v){statsRange=v; try{localStorage.setItem('rz.stRange',v)}catch(e){} scheduleRender()}
+  var head=h('div',{class:'st-head'},
+    h('button',{class:'btn back',type:'button',onclick:closeStats},icon('back'),h('span',{text:'Rozkład'})),
+    h('h1',{text:'Statystyka'}),
+    h('span',{class:'wkpill',text:(t&&t.name)||''}));
+  var ctl=h('div',{class:'st-ctl'},segCtl([['1','Zjazd '+d.cur],['5','5 zjazdów'],['all','Wszystkie '+d.wc]],statsRange,setR,'Okres'));
+  var feed=h('div',{class:'st-feed'}), list=d.comps.slice().reverse();
   list.slice(0,statsMore).forEach(function(c){
-    var x=hwById[c.homeworkId], sb=subj(x.subjectId), k=x.kind||defaultKind(x.week,x.subjectId);
+    var x=d.hw[c.homeworkId], sb=subj(x.subjectId), k=x.kind||defaultKind(x.week,x.subjectId), idx=personIdx(c.userEmail);
     feed.append(h('div',{class:'st-row k-'+(KCLS[k]||'inne')},
       h('div',{class:'st-when',text:when(c.doneAt)}),
       h('div',{class:'st-what'},h('div',null,h('b',{text:personName(c.userEmail,c.userId)}),' · '+x.text),
         h('small',{text:(sb?sb.name:'?')+' · '+k+' · zjazd '+x.week+(x.createdAt&&c.doneAt>=x.createdAt?' · w '+dur(c.doneAt-x.createdAt):'')}))));
   });
-  if(list.length>statsMore) feed.append(h('button',{class:'btn',type:'button',onclick:function(){statsMore+=30; renderStats()}},'Pokaż więcej'));
-  function setR(v){statsRange=v; try{localStorage.setItem('rz.stRange',v)}catch(e){} renderStats()}
-  function setM(v){statsMode=v; try{localStorage.setItem('rz.stMode',v)}catch(e){} renderStats()}
-  statsBox.replaceChildren.apply(statsBox,[
-    h('div',{class:'st-ctl'},
-      segCtl([['1','Zjazd '+cur],['5','5 zjazdów'],['all','Wszystkie '+wc]],statsRange,setR,'Okres'),
-      segCtl([['count','Najwięcej'],['speed','Najszybciej']],statsMode,setM,'Ranking')),
-    h('div',{class:'sec'},h('h3',{text:(statsMode==='count'?'Najwięcej wykonanych zadań':'Najszybciej od dodania do wykonania')+' · '+rangeTxt}),chart,
-      statsMode==='speed'?h('div',{class:'muted st-note',text:'Liczy się mediana czasu od dodania zadania do odhaczenia.'}):null),
-    cols?h('div',{class:'sec'},h('h3',{text:'Wykonane w każdym zjeździe'}),cols):null,
-    h('div',{class:'sec'},h('h3',{text:'Ostatnio wykonane'}),list.length?feed:h('div',{class:'muted',text:'Nikt jeszcze nie odhaczył żadnego zadania w tym okresie.'}))].filter(Boolean));
+  if(list.length>statsMore) feed.append(h('button',{class:'btn',type:'button',onclick:function(){statsMore+=30; scheduleRender()}},'Pokaż więcej'));
+  var cards=[
+    chartRank(d,inner1),
+    chartSpeed(d,inner1),
+    chartLine(d,innerW),
+    chartCols(d,innerW,true),
+    chartHeat(d,innerW),
+    chartSubjects(d,inner1),
+    chartPriority(d,inner1),
+    vcard('Ostatnio wykonane',rangeLabel(d),list.length?feed:noData('Nikt jeszcze nie odhaczył żadnego zadania w tym okresie.'),true)
+  ].filter(Boolean);
+  app.replaceChildren(head,ctl,kpis,h('div',{class:'vgrid'},cards));
 }
+
 
 /* ---------- terms & settings ---------- */
 async function createTerm(name,copyFrom){
@@ -1308,7 +1601,10 @@ async function createTerm(name,copyFrom){
 /* ---------- boot ---------- */
 $('#termSel').addEventListener('change',function(e){S.termId=e.target.value; try{localStorage.setItem('rz.term',S.termId)}catch(err){} ensureTerm(); scheduleRender()});
 $('#btnEdit').addEventListener('click',function(){S.edit=!S.edit; scheduleRender()});
-$('#btnSubjects').addEventListener('click',openSubjects);
+$('#btnSubjects').addEventListener('click',function(){ if(S.view==='stats') closeStats(); openSubjects() });
+$('#btnStats').addEventListener('click',function(){ S.view==='stats'?closeStats():openStats() });
+window.addEventListener('popstate',function(){ if(S.view==='stats'&&!(history.state&&history.state.rz==='stats')){ S.view=null; scheduleRender() } });
+var rzT=0; window.addEventListener('resize',function(){ if(S.view!=='stats') return; clearTimeout(rzT); rzT=setTimeout(scheduleRender,150) });
 $('#btnTheme').addEventListener('click',toggleTheme);
 if(mq.addEventListener) mq.addEventListener('change',function(){S.edit=false; scheduleRender()});
 try{var w=parseInt(localStorage.getItem('rz.week'),10); if(w>0) S.week=w}catch(e){}
@@ -1512,7 +1808,7 @@ function eyeIcon(off){
 function showLogin(mode){
   mode=mode||'in';
   document.body.classList.add('auth'); applyTheme(); S.ready=false; S.user=null; S.role=null;
-  [accountSheet,settingsSheet,statsSheet,editorSheet,subjectSheet,subjectsSheet].forEach(function(s){s.close()});
+  [accountSheet,settingsSheet,editorSheet,subjectSheet,subjectsSheet].forEach(function(s){s.close()});
   var em=h('input',{type:'email',placeholder:'E-mail',autocomplete:'email','aria-label':'E-mail',autocapitalize:'none',autocorrect:'off',spellcheck:'false',inputmode:'email',value:lastEmail});
   em.addEventListener('input',function(){ lastEmail=em.value.trim() });
   var twice=mode==='up'||mode==='new';
